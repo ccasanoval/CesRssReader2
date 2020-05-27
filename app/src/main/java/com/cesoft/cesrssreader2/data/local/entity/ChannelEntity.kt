@@ -10,7 +10,7 @@ import java.util.*
 @Keep // Proguard
 @Entity(tableName = "channels")
 data class ChannelEntity(
-    @PrimaryKey val id: String = "1",
+    @PrimaryKey val id: String = UUID.randomUUID().toString(),
     val title: String?,
     val link: String?,
     val description: String?,
@@ -19,7 +19,7 @@ data class ChannelEntity(
     //val articles: MutableList<Feed> = mutableListOf()
 ) {
     constructor(channel: Channel): this(
-        UUID.randomUUID().toString(),
+        channel.id ?: UUID.randomUUID().toString(),
         channel.title ?: "?",
         channel.link,
         channel.description,

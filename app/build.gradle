@@ -40,7 +40,7 @@ def navigation_version = "2.2.2"
 def androidx_test_version = '1.2.0'
 def appcompat_version = '1.1.0'
 def constraint_layout_version = '1.1.3'
-def coroutines_android_version = '1.3.2'
+def coroutines_android_version = '1.3.7'
 def expresso_version = '3.2.0'
 def glide_version = '4.11.0'
 def junit_version = '4.13'
@@ -61,7 +61,7 @@ dependencies {
 
     // TEST -----------------------------------------------------------------------------------------
     testImplementation "junit:junit:$junit_version"
-    // Coroutines testing
+    // Coroutines
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_android_version"
     // mocks
     testImplementation "org.mockito:mockito-core:2.25.0"
@@ -80,7 +80,7 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$expresso_version"
     androidTestImplementation "androidx.test.espresso:espresso-contrib:$expresso_version"
     androidTestImplementation "androidx.test.espresso:espresso-intents:$expresso_version"
-    // Architecture Components testing libraries
+    // Architecture Components
     androidTestImplementation "androidx.arch.core:core-testing:$lifecycle_version_test"
     //
 

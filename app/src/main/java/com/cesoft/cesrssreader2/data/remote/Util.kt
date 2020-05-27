@@ -11,6 +11,7 @@ import com.cesoft.cesrssreader2.data.entity.Channel
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
 class Util(private val context: Context) {
+
     fun isOnline(): Boolean {
         val connectivityManager = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -33,7 +34,7 @@ class Util(private val context: Context) {
         for(article in channel.articles) {
             var categories = ""
             for(category in article.categories) {
-                categories += " $category"
+                categories += "$category "
             }
             feeds.add(Feed(
                 null,
@@ -48,12 +49,13 @@ class Util(private val context: Context) {
                 categories
             ))
         }
+        //android.util.Log.e("Util", "parse---------------------------------------"+channel.image?.title+" : "+channel.image?.link+" : "+channel.image?.url+" : "+channel.image?.description)
         return Channel(
             null,
             channel.title,
             channel.link,
             channel.description,
-            channel.image.toString(),
+            channel.image?.toString(),
             feeds
         )
     }

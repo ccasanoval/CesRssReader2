@@ -4,7 +4,6 @@ import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.cesoft.cesrssreader2.data.entity.Channel
 import com.cesoft.cesrssreader2.data.entity.Feed
 import java.util.*
 
@@ -23,7 +22,7 @@ data class FeedEntity(
     var categories: String?
 ) {
     constructor(feed: Feed): this(
-        UUID.randomUUID().toString(),
+        feed.id ?: UUID.randomUUID().toString(),
         feed.guid,
         feed.title,
         feed.author,
