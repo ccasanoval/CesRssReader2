@@ -25,17 +25,16 @@ class FeedlistViewModel : ViewModel(), KoinComponent {
     private val _snackbar = MutableLiveData<Any?>()
     val snackbar: LiveData<Any?>
         get() = _snackbar
-    private val _snackbarString = MutableLiveData<String?>()
-    val snackbarString: LiveData<String?>
-        get() = _snackbarString
 
     private val _feedlist = MutableLiveData<Channel>()
     val feedlist: LiveData<Channel>
         get() = _feedlist
 
-    fun onSnackbarShowed() {
-        _snackbar.value = null
-    }
+    private val _rssUrlList = MutableLiveData<List<String>>()
+    val rssUrlList: LiveData<List<String>>
+        get() = _rssUrlList
+
+    fun onSnackbarShowed() { _snackbar.value = null }
 
     fun fetchFeed(url: String) {
         GlobalScope.launch(Dispatchers.Main) {

@@ -2,6 +2,7 @@ package com.cesoft.cesrssreader2.ui.feedlist
 
 import android.annotation.SuppressLint
 import android.text.method.LinkMovementMethod
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -19,7 +20,12 @@ import java.util.*
 class FeedlistAdapter(val feeds: MutableList<Feed>)
     : RecyclerView.Adapter<FeedlistAdapter.ViewHolder>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_feedlist, parent, false))
+    companion object {
+        private val TAG: String = FeedlistAdapter::class.simpleName!!
+    }
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
+        ViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.item_feedlist, parent, false))
 
     override fun getItemCount() = feeds.size
 
@@ -41,25 +47,17 @@ class FeedlistAdapter(val feeds: MutableList<Feed>)
                         pubDateString = sdf.format(date)
                     }
                 }
-            } catch (e: Exception) {
-                e.printStackTrace()
+            }
+            catch(e: Exception) {
+                Log.e(TAG, "ViewHolder:bind:e:",e)
             }
 
-            itemView.title.text = feed.title
 
             Glide.with(itemView).load(feed.image).into(itemView.image);
             //Picasso.get().load(article.image).placeholder(R.drawable.placeholder).into(itemView.image)
 
+            itemView.title.text = feed.title
             itemView.pubDate.text = pubDateString
-            /*var categories = ""
-            for (i in 0 until feed.categories.size) {
-                categories = if (i == article.categories.size - 1) {
-                    categories + article.categories[i]
-                } else {
-                    categories + article.categories[i] + ", "
-                }
-            }*/
-
             itemView.categories.text = feed.categories
 
             itemView.setOnClickListener {

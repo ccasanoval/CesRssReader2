@@ -1,13 +1,12 @@
 package com.cesoft.cesrssreader2.data.local
 
 import androidx.room.Room
-import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
 import com.cesoft.cesrssreader2.data.entity.Feed
-import com.cesoft.cesrssreader2.data.local.dao.FeedDao
+import com.cesoft.cesrssreader2.data.local.dao.RssDao
 import com.cesoft.cesrssreader2.data.local.entity.ChannelEntity
-import com.cesoft.cesrssreader2.data.local.entity.FeedEntity
+import com.cesoft.cesrssreader2.data.local.entity.ItemEntity
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.runBlocking
 import org.junit.After
@@ -40,12 +39,12 @@ class LocalInstrumentedTest {
     private var feedCategories: String = "categories"
 
     private val context = InstrumentationRegistry.getInstrumentation().context
-    private lateinit var db: FeedDb
-    private lateinit var dao: FeedDao
+    private lateinit var db: RssDb
+    private lateinit var dao: RssDao
 
     @Before
     fun init() {
-        db = Room.inMemoryDatabaseBuilder(context, FeedDb::class.java).build()
+        db = Room.inMemoryDatabaseBuilder(context, RssDb::class.java).build()
         dao = db.feedDao
     }
 
@@ -61,8 +60,8 @@ class LocalInstrumentedTest {
 
         var channelEntity = dao.channel()
         Assert.assertEquals("", ChannelEntity@null, channelEntity)
-        var feedsEntiy = dao.feeds()
-        Assert.assertEquals("", listOf<FeedEntity>(), feedsEntiy)
+        var feedsEntiy = dao.items()
+        Assert.assertEquals("", listOf<ItemEntity>(), feedsEntiy)
 
         channelEntity = ChannelEntity(channelId, channelTitle, channelLink, channelDescription, channelImage)
        // val time = System.currentTimeMillis() - channelEntity.created
@@ -75,14 +74,14 @@ class LocalInstrumentedTest {
         }
         feedsEntiy = mutableListOf()
         for(feed in feeds) {
-            feedsEntiy.add(FeedEntity(feed))
+            feedsEntiy.add(ItemEntity(feed))
         }
 
         dao.updateChannel(channelEntity)
-        dao.updateFeeds(feedsEntiy)
+        dao.updateItems(feedsEntiy)
 
         val channelEntity2 = dao.channel()
-        val feedEntity2 = dao.feeds()
+        val feedEntity2 = dao.items()
 
         Assert.assertEquals(channelEntity, channelEntity2)
         Assert.assertEquals(feedsEntiy, feedEntity2)

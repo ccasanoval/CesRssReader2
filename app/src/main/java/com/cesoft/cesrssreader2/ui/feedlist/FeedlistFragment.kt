@@ -10,21 +10,19 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
+import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.cesoft.cesrssreader2.R
-import com.cesoft.cesrssreader2.data.remote.Util
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.main_fragment.*
+import kotlinx.android.synthetic.main.feedlist_fragment.*
 import org.koin.core.KoinComponent
-import org.koin.core.inject
-
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-//
+// TODO: autocomplete edit text with url saved on local db
 class FeedlistFragment : Fragment(), KoinComponent {
 
 	companion object {
@@ -33,16 +31,24 @@ class FeedlistFragment : Fragment(), KoinComponent {
 	}
 
 	private val viewModel: FeedlistViewModel by viewModels()
-	//private lateinit var viewModel: FeedlistViewModel = FeedlistViewModel()
 	private lateinit var adapter: FeedlistAdapter
 
 	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
 							  savedInstanceState: Bundle?): View {
-		return inflater.inflate(R.layout.main_fragment, container, false)
+		return inflater.inflate(R.layout.feedlist_fragment, container, false)
 	}
 
 	override fun onActivityCreated(savedInstanceState: Bundle?) {
 		super.onActivityCreated(savedInstanceState)
+
+		val feedUrlAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
+			requireContext(),
+			android.R.layout.simple_dropdown_item_1line)
+		feedUrl.setAdapter(feedUrlAdapter)
+		viewModel.rssUrlList.observe(viewLifecycleOwner, Observer { rssUrlList ->
+			Log.e(TAG, "viewModel.rssUrlList-------------------------------------"+rssUrlList.size)
+			feedUrlAdapter.addAll(rssUrlList)
+		})
 
 		viewModel.feedlist.observe(viewLifecycleOwner, Observer { channel ->
 			if(channel != null) {
@@ -54,7 +60,7 @@ class FeedlistFragment : Fragment(), KoinComponent {
 				adapter.notifyDataSetChanged()
 				progressBar.visibility = View.GONE
 				swipe.isRefreshing = false
-				hideKeyboard()
+				hideKb()
 			}
 		})
 
@@ -75,39 +81,17 @@ class FeedlistFragment : Fragment(), KoinComponent {
 		swipe.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark)
 		swipe.canChildScrollUp()
 		swipe.setOnRefreshListener {
-			adapter.feeds.clear()//TODO: es necesario mutable solo para esto?
+			adapter.feeds.clear()
 			adapter.notifyDataSetChanged()
 			swipe.isRefreshing = true
 			viewModel.fetchFeed(feedUrl.text.toString())
-			hideKeyboard()
+			hideKb()
 		}
 
         viewModel.fetchFeed(feedUrl.text.toString())
 
-		//TODO: no utilizar netUtil porque el repo hara eso...
-		/*if( ! netUtil.isOnline()) {
-			context?.let {
-				val builder = AlertDialog.Builder(it)
-				builder.setMessage(R.string.app_name)
-					.setTitle(R.string.alert_message)
-					.setCancelable(false)
-					.setPositiveButton(
-						R.string.alert_positive
-					) { dialog, id -> activity?.finish() }
-					.create()
-					.show()
-			}
-		}
-		else if(netUtil.isOnline()) {
-			viewModel.fetchFeed(feedUrl.text.toString())
-		}*/
-
-//		feedUrl.doOnTextChanged { text, start, count, after ->
-//			viewModel.fetchFeed(text.toString())
-//		}
 		feedUrl.setOnKeyListener { view, code, keyEvent ->
 			if(code == KEYCODE_ENTER && keyEvent.action == ACTION_DOWN) {
-				Log.e(TAG, "Fetching------------------------------------------------------")
 				viewModel.fetchFeed(feedUrl.text.toString())
 				true
 			}
@@ -118,20 +102,23 @@ class FeedlistFragment : Fragment(), KoinComponent {
 
 	override fun onResume() {
 		super.onResume()
+		hideKb()
+	}
+
+	private fun hideKb() {
 		hideKeyboard()
-	}
-
-	// Extensions
-	private fun Fragment.hideKeyboard() {
 		feedList.requestFocus()
-		view?.let { activity?.hideKeyboard(it) }
 	}
-	private fun Activity.hideKeyboard() {
-		hideKeyboard(currentFocus ?: View(this))
-	}
-	private fun Context.hideKeyboard(view: View) {
-		val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-		inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
-	}
+}
 
+
+private fun Fragment.hideKeyboard() {
+	view?.let { activity?.hideKeyboard(it) }
+}
+private fun Activity.hideKeyboard() {
+	hideKeyboard(currentFocus ?: View(this))
+}
+private fun Context.hideKeyboard(view: View) {
+	val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+	inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
 }

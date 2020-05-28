@@ -7,9 +7,9 @@ import androidx.room.PrimaryKey
 import com.cesoft.cesrssreader2.data.entity.Feed
 import java.util.*
 
-@Keep // Proguard
-@Entity(tableName = "feeds", indices = [Index(value = ["id"]), Index(value = ["title"])])
-data class FeedEntity(
+@Keep
+@Entity(tableName = "items", indices = [Index(value = ["id"]), Index(value = ["title"])])
+data class ItemEntity(
     @PrimaryKey val id: String = UUID.randomUUID().toString(),
     val guid: String?,
     val title: String?,
@@ -46,6 +46,33 @@ data class FeedEntity(
         image,
         categories
     )
+
+    /*override fun equals(other: Any?): Boolean {
+        return other is ItemEntity
+                && id == other.id
+                && guid == other.guid
+                && title == other.title
+                && author == other.author
+                && link == other.link
+                && pubDate == other.pubDate
+                && description == other.description
+                && content == other.content
+                && image == other.image
+    }
+
+    override fun hashCode(): Int {
+        var result = id.hashCode()
+        result = 31 * result + (guid?.hashCode() ?: 0)
+        result = 31 * result + (title?.hashCode() ?: 0)
+        result = 31 * result + (author?.hashCode() ?: 0)
+        result = 31 * result + (link?.hashCode() ?: 0)
+        result = 31 * result + (pubDate?.hashCode() ?: 0)
+        result = 31 * result + (description?.hashCode() ?: 0)
+        result = 31 * result + (content?.hashCode() ?: 0)
+        result = 31 * result + (image?.hashCode() ?: 0)
+        result = 31 * result + (categories?.hashCode() ?: 0)
+        return result
+    }*/
 }
 /**
 package com.prof.rssparser

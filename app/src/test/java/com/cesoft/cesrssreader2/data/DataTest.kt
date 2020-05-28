@@ -3,7 +3,7 @@ package com.cesoft.cesrssreader2.data
 import com.cesoft.cesrssreader2.data.entity.Channel
 import com.cesoft.cesrssreader2.data.entity.Feed
 import com.cesoft.cesrssreader2.data.local.entity.ChannelEntity
-import com.cesoft.cesrssreader2.data.local.entity.FeedEntity
+import com.cesoft.cesrssreader2.data.local.entity.ItemEntity
 import org.junit.After
 import org.junit.Assert
 import org.junit.Before
@@ -41,7 +41,7 @@ class DataTest {
     private val channel = Channel(channelId, channelTitle, channelLink, channelDescription, channelImage, feeds)
 
     private val feedsEntity = MutableList(3) { i ->
-        FeedEntity("id$i", "$feedGuid$i", "$feedTitle$i", "$feedAuthor$i",
+        ItemEntity("id$i", "$feedGuid$i", "$feedTitle$i", "$feedAuthor$i",
             "$feedLink$i", "$feedPubDate$i", "$feedDescription$i",
             "$feedContent$i", "$feedImage$i", "$feedCategories$i")
     }
@@ -69,10 +69,15 @@ class DataTest {
         val channelEntity2 = ChannelEntity(channel)
         //channelEntity2.id = channel.id
         Assert.assertEquals(channelEntity, channelEntity2)
+        Assert.assertEquals(channelEntity.id, channelEntity2.id)
+        Assert.assertEquals(channelEntity.description, channelEntity2.description)
+        Assert.assertEquals(channelEntity.image, channelEntity2.image)
+        Assert.assertEquals(channelEntity.link, channelEntity2.link)
+        Assert.assertEquals(channelEntity.title, channelEntity2.title)
 
-        val feedsEntity2 = mutableListOf<FeedEntity>()
+        val feedsEntity2 = mutableListOf<ItemEntity>()
         for(feed in feeds) {
-            feedsEntity2.add(FeedEntity(feed))
+            feedsEntity2.add(ItemEntity(feed))
         }
         Assert.assertEquals(feedsEntity, feedsEntity2)
     }

@@ -1,17 +1,19 @@
 package com.cesoft.cesrssreader2.data
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.cesoft.cesrssreader2.data.local.FeedDb
-import com.cesoft.cesrssreader2.data.local.dao.FeedDao
+import com.cesoft.cesrssreader2.data.local.RssDb
+import com.cesoft.cesrssreader2.data.local.dao.RssDao
+import com.cesoft.cesrssreader2.data.local.entity.RssUrlEntity
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
+import org.junit.Test
 import org.junit.runner.RunWith
 import org.junit.runners.JUnit4
 import org.mockito.ArgumentMatchers.any
 import org.mockito.Mock
 import org.mockito.Mockito.*
 import org.mockito.MockitoAnnotations
-
 
 @RunWith(JUnit4::class)
 class RepoTest {
@@ -21,7 +23,7 @@ class RepoTest {
     val instantExecutorRule = InstantTaskExecutorRule()
 
     @Mock
-    private lateinit var dao: FeedDao
+    private lateinit var dao: RssDao
 //    @Mock
 //    private lateinit var service: FeedService
 //    private lateinit var repository: Repo
@@ -32,11 +34,19 @@ class RepoTest {
     fun init() {
         MockitoAnnotations.initMocks(this)
 
-        val db = mock(FeedDb::class.java)
+        val db = mock(RssDb::class.java)
         `when`(db.feedDao).thenReturn(dao)
         `when`(db.runInTransaction(any())).thenCallRealMethod()
+        dao = db.feedDao
 
         //repository = Repo(db, dao, service, TestContextProvider())
+    }
+
+    @Test
+    fun loadMatchDetail() = runBlocking {
+        dao.addRssUrl(RssUrlEntity("rss url test"))
+
+        //TODO:...........
     }
 /*
     @Test
