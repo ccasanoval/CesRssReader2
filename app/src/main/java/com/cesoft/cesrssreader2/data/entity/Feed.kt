@@ -11,4 +11,8 @@ data class Feed(
     var content: String?,
     var image: String?,
     var categories: String?
-)
+) {
+    companion object {
+        //val EMPTY = Feed(null, "", "", "", "", "", "", "", "", "")
+    }
+}

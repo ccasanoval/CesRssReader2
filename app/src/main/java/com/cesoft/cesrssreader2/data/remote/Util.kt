@@ -29,6 +29,7 @@ class Util(private val context: Context) {
         }
     }
 
+/*
     fun parse(channel: com.prof.rssparser.Channel): Channel {
         val feeds = mutableListOf<Feed>()
         for(article in channel.articles) {
@@ -58,5 +59,5 @@ class Util(private val context: Context) {
             channel.image?.toString(),
             feeds
         )
-    }
+    }*/
 }

@@ -3,6 +3,7 @@ package com.cesoft.cesrssreader2.ui.feedlist
 import android.app.Activity
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent.ACTION_DOWN
 import android.view.KeyEvent.KEYCODE_ENTER
 import android.view.LayoutInflater
@@ -63,7 +64,10 @@ class FeedlistFragment : Fragment(), KoinComponent {
 
 		viewModel.snackbar.observe(viewLifecycleOwner, Observer { value ->
 			value?.let {
-				Snackbar.make(root_layout, value, Snackbar.LENGTH_LONG).show()
+				if(value is Int )
+					Snackbar.make(root_layout, value, Snackbar.LENGTH_LONG).show()
+				else if(value is String)
+					Snackbar.make(root_layout, value, Snackbar.LENGTH_LONG).show()
 				viewModel.onSnackbarShowed()
 			}
 		})
@@ -103,6 +107,7 @@ class FeedlistFragment : Fragment(), KoinComponent {
 //		}
 		feedUrl.setOnKeyListener { view, code, keyEvent ->
 			if(code == KEYCODE_ENTER && keyEvent.action == ACTION_DOWN) {
+				Log.e(TAG, "Fetching------------------------------------------------------")
 				viewModel.fetchFeed(feedUrl.text.toString())
 				true
 			}

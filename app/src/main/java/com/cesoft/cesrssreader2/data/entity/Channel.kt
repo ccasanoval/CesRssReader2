@@ -9,6 +9,6 @@ data class Channel(
     val feeds: MutableList<Feed>
 ) {
     companion object {
-        val EMPTY = Channel(null, null, null, null, null, mutableListOf<Feed>())
+        val EMPTY = Channel(null, null, null, null, null, mutableListOf())
     }
 }

@@ -1,5 +1,6 @@
 package com.cesoft.cesrssreader2.ui.feedlist
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -11,6 +12,7 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
 import org.koin.core.inject
+import java.lang.Exception
 
 class FeedlistViewModel : ViewModel(), KoinComponent {
 
@@ -20,9 +22,12 @@ class FeedlistViewModel : ViewModel(), KoinComponent {
 
     private val repo: Repo by inject()
 
-    private val _snackbar = MutableLiveData<Int?>()
-    val snackbar: LiveData<Int?>
+    private val _snackbar = MutableLiveData<Any?>()
+    val snackbar: LiveData<Any?>
         get() = _snackbar
+    private val _snackbarString = MutableLiveData<String?>()
+    val snackbarString: LiveData<String?>
+        get() = _snackbarString
 
     private val _feedlist = MutableLiveData<Channel>()
     val feedlist: LiveData<Channel>
@@ -34,13 +39,18 @@ class FeedlistViewModel : ViewModel(), KoinComponent {
 
     fun fetchFeed(url: String) {
         GlobalScope.launch(Dispatchers.Main) {
-            val feeds = repo.fetchFeeds(url)
-            if(feeds != null) {
-                _feedlist.postValue(feeds!!)
+            try {
+                val feeds = repo.fetchFeeds(url)
+                if (feeds != null) {
+                    _feedlist.postValue(feeds!!)
+                } else {
+                    _snackbar.postValue(R.string.alert_message)
+                    _feedlist.postValue(Channel.EMPTY)
+                }
             }
-            else {
-                _snackbar.postValue(R.string.alert_message)
-                _feedlist.postValue(Channel.EMPTY)
+            catch(e: Exception) {
+                Log.e(TAG, "fetchFeed:e:-----------------------------------------------",e)
+                _snackbar.postValue(e.localizedMessage)
             }
         }
     }

@@ -5,15 +5,15 @@ import com.cesoft.cesrssreader2.data.entity.Channel
 import com.cesoft.cesrssreader2.data.local.dao.FeedDao
 import com.cesoft.cesrssreader2.data.local.entity.ChannelEntity
 import com.cesoft.cesrssreader2.data.local.entity.FeedEntity
-import com.cesoft.cesrssreader2.data.remote.FeedService
+import com.cesoft.cesrssreader2.data.remote.RssServiceImpl
 import com.cesoft.cesrssreader2.data.remote.Util
 import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
-class Repo(private val feedDao: FeedDao,
-           private val feedService: FeedService,
+class Repo(private val dao: FeedDao,
+           private val service: RssServiceImpl,
            private val defaultDispatcher: CoroutineDispatcher = Dispatchers.Default)
     : KoinComponent {
 
@@ -23,17 +23,19 @@ class Repo(private val feedDao: FeedDao,
 
     val util: Util by inject()
 
-    private suspend fun fetchLocalFeeds() = feedDao.channel()?.parse(feedDao.feeds())
-    private suspend fun fetchRemoteFeeds(url: String) = updateLocalFeeds(feedService.getFeeds(url))
+    private suspend fun fetchLocalFeeds()
+            = dao.channel()?.parse(dao.feeds())
+    private suspend fun fetchRemoteFeeds(url: String)
+            = updateLocalFeeds(service.rss(url).parse())
     private suspend fun updateLocalFeeds(channel: Channel): Channel {
         val channelParsed = ChannelEntity(channel)
         val feedsParsed = mutableListOf<FeedEntity>()
         for(feed in channel.feeds) {
             feedsParsed.add(FeedEntity(feed))
         }
-        feedDao.updateChannel(channelParsed)
-        feedDao.deleteFeeds()
-        feedDao.updateFeeds(feedsParsed)
+        dao.updateChannel(channelParsed)
+        dao.deleteFeeds()
+        dao.updateFeeds(feedsParsed)
         Log.e(TAG, "updateLocalFeeds--------------------------------------------------")
         return channel
     }
@@ -41,7 +43,7 @@ class Repo(private val feedDao: FeedDao,
     //TODO: aclarar logica de actualizacion...
     //TODO: cache de libreria RSS-PARSE ??
     suspend fun fetchFeeds(url: String): Channel? {
-        val channel = feedDao.channel()
+        val channel = dao.channel()
         return if(util.isOnline()) {
             //TODO: check fecha del channel...
             channel?.let {

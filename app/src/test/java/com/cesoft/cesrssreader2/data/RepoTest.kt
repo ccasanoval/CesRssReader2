@@ -3,7 +3,6 @@ package com.cesoft.cesrssreader2.data
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.cesoft.cesrssreader2.data.local.FeedDb
 import com.cesoft.cesrssreader2.data.local.dao.FeedDao
-import com.cesoft.cesrssreader2.data.remote.FeedService
 import org.junit.Before
 import org.junit.Rule
 import org.junit.runner.RunWith
@@ -23,11 +22,11 @@ class RepoTest {
 
     @Mock
     private lateinit var dao: FeedDao
-    @Mock
-    private lateinit var service: FeedService
-    private lateinit var repository: Repo
-
-    private val testMatchId = "576558"
+//    @Mock
+//    private lateinit var service: FeedService
+//    private lateinit var repository: Repo
+//
+//    private val testMatchId = "576558"
 
     @Before
     fun init() {
