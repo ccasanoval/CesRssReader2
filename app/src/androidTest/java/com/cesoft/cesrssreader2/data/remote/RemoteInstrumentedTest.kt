@@ -79,4 +79,26 @@ class RemoteInstrumentedTest {
 
         Assert.assertEquals(0, rssEntity.channel.items?.get(0)?.categories?.size)
     }
+
+    @ExperimentalCoroutinesApi
+    @Test
+    fun remoteInstrumentedTestC() = runBlocking {
+        //http://www.xatakandroid.com/tag/feeds/rss2.xml
+        val rssEntity = serv.rss("http://www.xatakandroid.com/tag/feeds/rss2.xml")
+
+        Assert.assertEquals("2.0", rssEntity.version)
+        Assert.assertEquals("Magazine - feeds", rssEntity.channel.title)
+        Assert.assertEquals("https://www.xatakandroid.com", rssEntity.channel.link)
+        Assert.assertEquals("Publicación de noticias sobre gadgets y tecnología. Últimas tecnologías en electrónica de consumo y novedades tecnológicas en móviles, tablets, informática, etc", rssEntity.channel.description)
+        Assert.assertEquals("", rssEntity.channel.lastBuildDate)
+
+        Assert.assertEquals(3, rssEntity.channel.items?.size)
+        Assert.assertEquals("Los planes de feedly Pro ya están disponibles para todo el mundo", rssEntity.channel.items?.get(0)?.title)
+        Assert.assertEquals("https://www.xatakandroid.com/productividad-herramientas/los-planes-de-feedly-pro-ya-estan-disponibles-para-todo-el-mundo", rssEntity.channel.items?.get(0)?.guid)
+        Assert.assertEquals("https://www.xatakandroid.com/productividad-herramientas/los-planes-de-feedly-pro-ya-estan-disponibles-para-todo-el-mundo", rssEntity.channel.items?.get(0)?.link)
+        Assert.assertEquals("Mon, 26 Aug 2013 16:30:13 +0000", rssEntity.channel.items?.get(0)?.pubDate)
+        Assert.assertEquals("", rssEntity.channel.items?.get(0)?.image)
+
+        Assert.assertEquals(0, rssEntity.channel.items?.get(0)?.categories?.size)
+    }
 }

@@ -38,16 +38,25 @@ data class ItemEntity(
         }
         return ""
     }
-    fun parse() = Feed(
-        null,
-        guid,
-        title,
-        author,
-        link,
-        pubDate,
-        description,
-        body,
-        image,
-        categories.parse()
-    )
+    fun parse(): Feed {
+        // <img src="//i.blogs.es/44dec9/feedly-pro/1024_2000.jpg"
+        if(body.isNullOrEmpty()) {
+            body = description
+        }
+        if(image.isNullOrEmpty()) {
+
+        }
+        return Feed(
+            null,
+            guid,
+            title,
+            author,
+            link,
+            pubDate,
+            description,
+            body,
+            image,
+            categories.parse()
+        )
+    }
 }

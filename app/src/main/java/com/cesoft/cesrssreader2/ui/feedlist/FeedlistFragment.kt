@@ -1,7 +1,7 @@
 package com.cesoft.cesrssreader2.ui.feedlist
 
-import android.app.Activity
-import android.content.Context
+import com.cesoft.cesrssreader2.ui.hideKeyboard//Extension functions
+
 import android.os.Bundle
 import android.util.Log
 import android.view.KeyEvent.ACTION_DOWN
@@ -9,7 +9,6 @@ import android.view.KeyEvent.KEYCODE_ENTER
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.view.inputmethod.InputMethodManager
 import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -46,7 +45,7 @@ class FeedlistFragment : Fragment(), KoinComponent {
 			android.R.layout.simple_dropdown_item_1line)
 		feedUrl.setAdapter(feedUrlAdapter)
 		viewModel.rssUrlList.observe(viewLifecycleOwner, Observer { rssUrlList ->
-			Log.e(TAG, "viewModel.rssUrlList-------------------------------------"+rssUrlList.size)
+			feedUrlAdapter.clear()
 			feedUrlAdapter.addAll(rssUrlList)
 		})
 
@@ -90,6 +89,9 @@ class FeedlistFragment : Fragment(), KoinComponent {
 
         viewModel.fetchFeed(feedUrl.text.toString())
 
+		feedUrl.setOnItemClickListener() { adapter, view, i, j ->
+			viewModel.fetchFeed(feedUrl.text.toString())
+		}
 		feedUrl.setOnKeyListener { view, code, keyEvent ->
 			if(code == KEYCODE_ENTER && keyEvent.action == ACTION_DOWN) {
 				viewModel.fetchFeed(feedUrl.text.toString())
@@ -109,16 +111,4 @@ class FeedlistFragment : Fragment(), KoinComponent {
 		hideKeyboard()
 		feedList.requestFocus()
 	}
-}
-
-
-private fun Fragment.hideKeyboard() {
-	view?.let { activity?.hideKeyboard(it) }
-}
-private fun Activity.hideKeyboard() {
-	hideKeyboard(currentFocus ?: View(this))
-}
-private fun Context.hideKeyboard(view: View) {
-	val inputMethodManager = getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
-	inputMethodManager.hideSoftInputFromWindow(view.windowToken, 0)
 }

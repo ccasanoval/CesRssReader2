@@ -74,4 +74,9 @@ class Repo(private val dao: RssDao,
             }
         }
     }
+
+    suspend fun fetchRssUrls(): List<String> {
+        val urlList = dao.rssUrls()
+        return List(urlList.size) { i -> urlList[i].url }
+    }
 }

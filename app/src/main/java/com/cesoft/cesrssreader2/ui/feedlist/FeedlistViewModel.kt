@@ -12,7 +12,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
 import org.koin.core.inject
-import java.lang.Exception
 
 class FeedlistViewModel : ViewModel(), KoinComponent {
 
@@ -34,6 +33,12 @@ class FeedlistViewModel : ViewModel(), KoinComponent {
     val rssUrlList: LiveData<List<String>>
         get() = _rssUrlList
 
+    init {
+        GlobalScope.launch(Dispatchers.Main) {
+            _rssUrlList.postValue(fetchRssUrlList())
+        }
+    }
+
     fun onSnackbarShowed() { _snackbar.value = null }
 
     fun fetchFeed(url: String) {
@@ -42,6 +47,8 @@ class FeedlistViewModel : ViewModel(), KoinComponent {
                 val feeds = repo.fetchFeeds(url)
                 if (feeds != null) {
                     _feedlist.postValue(feeds!!)
+                    _rssUrlList.postValue(fetchRssUrlList())
+                    Log.e(TAG, "-------------------------_rssUrlList = "+fetchRssUrlList())
                 } else {
                     _snackbar.postValue(R.string.alert_message)
                     _feedlist.postValue(Channel.EMPTY)
@@ -50,7 +57,21 @@ class FeedlistViewModel : ViewModel(), KoinComponent {
             catch(e: Exception) {
                 Log.e(TAG, "fetchFeed:e:-----------------------------------------------",e)
                 _snackbar.postValue(e.localizedMessage)
+                _feedlist.postValue(Channel.EMPTY)
             }
         }
+    }
+
+    private suspend fun fetchRssUrlList(): List<String> {
+        val list0 = mutableListOf(
+            "https://www.xatakandroid.com/tag/feeds/rss2.xml",
+            "https://www.nasa.gov/rss/dyn/breaking_news.rss",
+            "https://www.androidauthority.com/feed"
+        )
+        val list = repo.fetchRssUrls()
+        for(x in list) {
+            if (!list0.contains(x)) list0.add(x)
+        }
+        return list0
     }
 }

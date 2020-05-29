@@ -5,7 +5,7 @@ import androidx.room.Entity
 import androidx.room.PrimaryKey
 
 @Keep
-@Entity(tableName = "rss")
+@Entity(tableName = "rss", indices = [androidx.room.Index(value = ["url"])])
 data class RssUrlEntity(
     @PrimaryKey val url: String
 )
