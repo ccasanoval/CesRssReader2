@@ -13,4 +13,7 @@
 
     <string name="close_button">Cerrar</string>
     <string name="search_hint">Buscar una noticia</string>
+    <string name="item_image">Imagen de la noticia</string>
+
+
 </resources>

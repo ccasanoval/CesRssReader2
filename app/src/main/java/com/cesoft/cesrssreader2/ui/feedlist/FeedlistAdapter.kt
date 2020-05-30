@@ -22,6 +22,7 @@ import kotlinx.android.synthetic.main.item_feedlist.view.*
 import java.text.SimpleDateFormat
 import java.util.*
 
+
 class FeedlistAdapter(val items: MutableList<Item>)
     : RecyclerView.Adapter<FeedlistAdapter.ViewHolder>(), Filterable {
 
@@ -47,32 +48,25 @@ class FeedlistAdapter(val items: MutableList<Item>)
         @SuppressLint("SetJavaScriptEnabled")
         fun bind(item: Item) {
 
-            var pubDateString = item.pubDate
-
-            try {
-                val sourceDateString = item.pubDate
-                val sourceSdf = SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss Z", Locale.ENGLISH)
-                if (sourceDateString != null) {
-                    val date = sourceSdf.parse(sourceDateString)
-                    if (date != null) {
-                        val sdf = SimpleDateFormat("dd MMMM yyyy", Locale.getDefault())
-                        pubDateString = sdf.format(date)
-                    }
-                }
+            val img = item.image ?:""
+            if(img.isNotEmpty()) {
+                itemView.image.visibility = View.VISIBLE
+                Glide.with(itemView).load(img).into(itemView.image)
+                //Picasso.get().load(article.image).placeholder(R.drawable.placeholder).into(itemView.image)
             }
-            catch(e: Exception) {
-                Log.e(TAG, "ViewHolder:bind:e:",e)
+            else {
+                itemView.image.visibility = View.GONE
+                Log.e(TAG, "---------------------------NO IMAGE------------------------------------------")
             }
 
-            Glide.with(itemView).load(item.image).into(itemView.image)
-            //Picasso.get().load(article.image).placeholder(R.drawable.placeholder).into(itemView.image)
-
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-                itemView.title.text = Html.fromHtml(item.title, Html.FROM_HTML_MODE_COMPACT)
-            else
-                itemView.title.text = Html.fromHtml(item.title)
-            itemView.pubDate.text = pubDateString
+            itemView.title.text = toHtml(item.title)
             itemView.categories.text = item.categories
+            itemView.description.text = toHtml(item.description)
+            item.pubDate?.let {
+                itemView.pubDate.text = toDate(item.pubDate)
+            } ?: run{
+                itemView.pubDate.text =""
+            }
 
             itemView.setOnClickListener {
                 //show article content inside a dialog
@@ -103,6 +97,36 @@ class FeedlistAdapter(val items: MutableList<Item>)
                 (alertDialog.findViewById<View>(android.R.id.message) as TextView).movementMethod = LinkMovementMethod.getInstance()
             }
         }
+    }
+
+
+    //TODO: Move to utility class ?
+    private fun toHtml(text: String): String {
+        return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
+            Html.fromHtml(text.trim(), Html.FROM_HTML_MODE_COMPACT).toString()
+        else
+            Html.fromHtml(text.trim()).toString()
+    }
+    private fun toDate(text: String): String {
+        val formats = listOf(
+            "EEE, dd MMM yyyy HH:mm Z",
+            "EE MMM dd HH:mm:ss z yyyy",
+            "EEE, d MMM yyyy HH:mm:ss Z"
+        )
+        for(format in formats) {
+            try {
+                val sdf = SimpleDateFormat(format, Locale.ENGLISH)
+                val date = sdf.parse(text)
+                if (date != null) {
+                    Log.e(TAG, "ViewHolder:OK........."+SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(date))
+                    return SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(date)
+                }
+            }
+            catch(e: Exception) {
+                //Log.e(TAG, "ViewHolder:bind:e:", e)
+            }
+        }
+        return ""
     }
 
     /// Implemets Filterable

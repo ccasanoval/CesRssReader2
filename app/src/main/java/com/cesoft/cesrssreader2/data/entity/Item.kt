@@ -9,7 +9,7 @@ data class Item(
     val pubDate: String?,
     val description: String,
     var content: String,
-    var image: String,
+    var image: String?,
     var categories: String?
 ) {
     companion object {
