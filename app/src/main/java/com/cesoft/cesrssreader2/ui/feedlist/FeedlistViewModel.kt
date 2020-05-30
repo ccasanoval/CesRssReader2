@@ -44,18 +44,17 @@ class FeedlistViewModel : ViewModel(), KoinComponent {
     fun fetchFeed(url: String) {
         GlobalScope.launch(Dispatchers.Main) {
             try {
-                val feeds = repo.fetchFeeds(url)
-                if (feeds != null) {
-                    _feedlist.postValue(feeds!!)
+                val channel = repo.fetchChannel(url)
+                channel?.let {
+                    _feedlist.postValue(it)
                     _rssUrlList.postValue(fetchRssUrlList())
-                    Log.e(TAG, "-------------------------_rssUrlList = "+fetchRssUrlList())
-                } else {
+                } ?: run {
                     _snackbar.postValue(R.string.alert_message)
                     _feedlist.postValue(Channel.EMPTY)
                 }
             }
             catch(e: Exception) {
-                Log.e(TAG, "fetchFeed:e:-----------------------------------------------",e)
+                Log.e(TAG, "fetchFeed:e:",e)
                 _snackbar.postValue(e.localizedMessage)
                 _feedlist.postValue(Channel.EMPTY)
             }

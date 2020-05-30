@@ -5,8 +5,9 @@ import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
 import android.net.NetworkInfo
 import android.os.Build
-import com.cesoft.cesrssreader2.data.entity.Feed
-import com.cesoft.cesrssreader2.data.entity.Channel
+import org.jsoup.Jsoup
+import org.jsoup.nodes.Document
+import org.jsoup.select.Elements
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -29,35 +30,17 @@ class Util(private val context: Context) {
         }
     }
 
-/*
-    fun parse(channel: com.prof.rssparser.Channel): Channel {
-        val feeds = mutableListOf<Feed>()
-        for(article in channel.articles) {
-            var categories = ""
-            for(category in article.categories) {
-                categories += "$category "
+    companion object {
+        fun getImgSrcFromHtml(htmlString: String): String {
+            val doc: Document = Jsoup.parse(htmlString)
+            val images: Elements = doc.select("img")
+            for (el in images) {
+                var img = el.attr("src")
+                if(img.startsWith("//"))
+                    img = "http:$img"
+                return img
             }
-            feeds.add(Feed(
-                null,
-                article.guid,
-                article.title,
-                article.author,
-                article.link,
-                article.pubDate,
-                article.description,
-                article.content,
-                article.image,
-                categories
-            ))
+            return ""
         }
-        //android.util.Log.e("Util", "parse---------------------------------------"+channel.image?.title+" : "+channel.image?.link+" : "+channel.image?.url+" : "+channel.image?.description)
-        return Channel(
-            null,
-            channel.title,
-            channel.link,
-            channel.description,
-            channel.image?.toString(),
-            feeds
-        )
-    }*/
+    }
 }

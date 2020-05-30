@@ -1,7 +1,8 @@
 package com.cesoft.cesrssreader2.data.remote.entity
 
 import androidx.annotation.Keep
-import com.cesoft.cesrssreader2.data.entity.Feed
+import com.cesoft.cesrssreader2.data.entity.Item
+import com.cesoft.cesrssreader2.data.remote.Util
 import com.tickaroo.tikxml.annotation.*
 
 @Keep
@@ -38,24 +39,23 @@ data class ItemEntity(
         }
         return ""
     }
-    fun parse(): Feed {
-        // <img src="//i.blogs.es/44dec9/feedly-pro/1024_2000.jpg"
+    fun parse(): Item {
         if(body.isNullOrEmpty()) {
             body = description
         }
         if(image.isNullOrEmpty()) {
-
+            body?.let { image = Util.getImgSrcFromHtml(it) }
         }
-        return Feed(
+        return Item(
             null,
-            guid,
-            title,
-            author,
-            link,
-            pubDate,
-            description,
-            body,
-            image,
+            guid ?:"",
+            title ?:"",
+            author ?:"",
+            link ?:"",
+            pubDate ?:"",
+            description ?:"",
+            body ?:"",
+            image ?:"",
             categories.parse()
         )
     }

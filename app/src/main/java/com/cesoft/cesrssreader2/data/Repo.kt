@@ -31,7 +31,7 @@ class Repo(private val dao: RssDao,
     private suspend fun updateLocalFeeds(url: String, channel: Channel): Channel {
         val channelParsed = ChannelEntity(channel)
         val feedsParsed = mutableListOf<ItemEntity>()
-        for(feed in channel.feeds) {
+        for(feed in channel.items) {
             feedsParsed.add(ItemEntity(feed))
         }
         dao.addRssUrl(RssUrlEntity(url))
@@ -41,6 +41,7 @@ class Repo(private val dao: RssDao,
         return channel
     }
 
+    //TODO: use channel.lastBuildDate in the algorithm ?
     private enum class DataSource { NONE, LOCAL, REMOTE }
     private suspend fun localOrRemote(): DataSource {
         val channel = dao.channel()
@@ -60,8 +61,7 @@ class Repo(private val dao: RssDao,
             DataSource.NONE
     }
 
-    //TODO: use channel.lastBuildDate in the algorithm ?
-    suspend fun fetchFeeds(url: String): Channel? {
+    suspend fun fetchChannel(url: String): Channel? {
         return when(localOrRemote()) {
             DataSource.LOCAL -> {
                 fetchLocalFeeds()

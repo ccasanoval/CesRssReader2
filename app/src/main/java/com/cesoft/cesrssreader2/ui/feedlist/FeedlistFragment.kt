@@ -1,27 +1,25 @@
 package com.cesoft.cesrssreader2.ui.feedlist
 
-import com.cesoft.cesrssreader2.ui.hideKeyboard//Extension functions
-
 import android.os.Bundle
-import android.util.Log
+import android.view.*
 import android.view.KeyEvent.ACTION_DOWN
 import android.view.KeyEvent.KEYCODE_ENTER
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.cesoft.cesrssreader2.R
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.feedlist_fragment.*
 import org.koin.core.KoinComponent
+import com.cesoft.cesrssreader2.R
+import com.cesoft.cesrssreader2.ui.hideKeyboard//Extension functions
+
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-// TODO: autocomplete edit text with url saved on local db
+//
 class FeedlistFragment : Fragment(), KoinComponent {
 
 	companion object {
@@ -40,6 +38,20 @@ class FeedlistFragment : Fragment(), KoinComponent {
 	override fun onActivityCreated(savedInstanceState: Bundle?) {
 		super.onActivityCreated(savedInstanceState)
 
+		setHasOptionsMenu(true)
+
+//		searchItems.addTextChangedListener(object : TextWatcher {
+//			override fun afterTextChanged(s: Editable?) {
+//			}
+//
+//			override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+//			}
+//
+//			override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+//				nameFromDb(s.toString())
+//			}
+//		})
+
 		val feedUrlAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
 			requireContext(),
 			android.R.layout.simple_dropdown_item_1line)
@@ -54,7 +66,7 @@ class FeedlistFragment : Fragment(), KoinComponent {
 				if(channel.title != null) {
 					activity?.title = channel.title
 				}
-				adapter = FeedlistAdapter(channel.feeds)
+				adapter = FeedlistAdapter(channel.items)
 				feedList.adapter = adapter
 				adapter.notifyDataSetChanged()
 				progressBar.visibility = View.GONE
@@ -80,7 +92,7 @@ class FeedlistFragment : Fragment(), KoinComponent {
 		swipe.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark)
 		swipe.canChildScrollUp()
 		swipe.setOnRefreshListener {
-			adapter.feeds.clear()
+			adapter.items.clear()
 			adapter.notifyDataSetChanged()
 			swipe.isRefreshing = true
 			viewModel.fetchFeed(feedUrl.text.toString())
@@ -111,4 +123,26 @@ class FeedlistFragment : Fragment(), KoinComponent {
 		hideKeyboard()
 		feedList.requestFocus()
 	}
+
+	override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+		super.onCreateOptionsMenu(menu, inflater)
+		inflater.inflate(R.menu.main_menu, menu)
+		//val searchManager = context?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+		(menu.findItem(R.id.menu_search)?.actionView as SearchView).apply {
+			//Log.e(TAG, "onCreateOptionsMenu---------------------------------------------------------------------")
+			//setSearchableInfo(searchManager.getSearchableInfo(ComponentName(context, FeedlistFragment::class.java)))
+			setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+				override fun onQueryTextSubmit(query: String?): Boolean {
+					//Log.e(TAG, "onCreateOptionsMenu-onQueryTextSubmit--------------------------------------------------------------------")
+					return false
+				}
+				override fun onQueryTextChange(newText: String?): Boolean {
+					//Log.e(TAG, "onCreateOptionsMenu-onQueryTextChange--------------------------------------------------------------------")
+					adapter.filter.filter(newText)
+					return true
+				}
+			})
+		}
+	}
+
 }

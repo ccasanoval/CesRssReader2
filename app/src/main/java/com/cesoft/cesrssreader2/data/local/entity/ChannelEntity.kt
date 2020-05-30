@@ -4,7 +4,7 @@ import androidx.annotation.Keep
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.cesoft.cesrssreader2.data.entity.Channel
-import com.cesoft.cesrssreader2.data.entity.Feed
+import com.cesoft.cesrssreader2.data.entity.Item
 import java.util.*
 
 @Keep
@@ -28,7 +28,7 @@ data class ChannelEntity(
     )
 
     fun parse(items: List<ItemEntity>): Channel {
-        val parsedFeeds = mutableListOf<Feed>()
+        val parsedFeeds = mutableListOf<Item>()
         for(feed in items) {
             parsedFeeds.add(feed.parse())
         }

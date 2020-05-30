@@ -3,7 +3,7 @@ package com.cesoft.cesrssreader2.data.local
 import androidx.room.Room
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.platform.app.InstrumentationRegistry
-import com.cesoft.cesrssreader2.data.entity.Feed
+import com.cesoft.cesrssreader2.data.entity.Item
 import com.cesoft.cesrssreader2.data.local.dao.RssDao
 import com.cesoft.cesrssreader2.data.local.entity.ChannelEntity
 import com.cesoft.cesrssreader2.data.local.entity.ItemEntity
@@ -27,7 +27,6 @@ class LocalInstrumentedTest {
     private val channelDescription: String = "Channel Description"
     private val channelImage: String = "Channel Image"
 
-    private val feedId = UUID.randomUUID().toString()
     private val feedGuid: String = "guid"
     private val feedTitle: String = "title"
     private val feedAuthor: String = "author"
@@ -59,7 +58,7 @@ class LocalInstrumentedTest {
     fun testA() = runBlocking {
 
         var channelEntity = dao.channel()
-        Assert.assertEquals("", ChannelEntity@null, channelEntity)
+        Assert.assertEquals("", null, channelEntity)
         var feedsEntiy = dao.items()
         Assert.assertEquals("", listOf<ItemEntity>(), feedsEntiy)
 
@@ -68,7 +67,7 @@ class LocalInstrumentedTest {
         //Assert.assertTrue(time in 0..99)
 
         val feeds = List(3) { i ->
-            Feed("id$i", "$feedGuid$i", "$feedTitle$i", "$feedAuthor$i",
+            Item("id$i", "$feedGuid$i", "$feedTitle$i", "$feedAuthor$i",
                 "$feedLink$i", "$feedPubDate$i", "$feedDescription$i",
                 "$feedContent$i", "$feedImage$i", "$feedCategories$i")
         }

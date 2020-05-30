@@ -6,7 +6,7 @@ data class Channel(
     val link: String?,
     val description: String?,
     val image: String? = null,
-    val feeds: MutableList<Feed>
+    val items: MutableList<Item>
 ) {
     companion object {
         val EMPTY = Channel(null, null, null, null, null, mutableListOf())

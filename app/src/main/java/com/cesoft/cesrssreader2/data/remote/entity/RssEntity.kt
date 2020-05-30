@@ -2,7 +2,7 @@ package com.cesoft.cesrssreader2.data.remote.entity
 
 import androidx.annotation.Keep
 import com.cesoft.cesrssreader2.data.entity.Channel
-import com.cesoft.cesrssreader2.data.entity.Feed
+import com.cesoft.cesrssreader2.data.entity.Item
 import com.tickaroo.tikxml.annotation.Attribute
 import com.tickaroo.tikxml.annotation.Element
 import com.tickaroo.tikxml.annotation.Xml
@@ -26,10 +26,10 @@ data class RssEntity(
         channel.image,
         parseItems())
 
-    private fun parseItems(): MutableList<Feed> =
+    private fun parseItems(): MutableList<Item> =
         channel.items?.filterNotNull().let { items ->
             MutableList(items!!.size) { i ->
                 items[i].parse()
             }
-        } ?: mutableListOf<Feed>()
+        }// ?: mutableListOf<Item>()
 }
