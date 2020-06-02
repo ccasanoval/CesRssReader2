@@ -7,14 +7,14 @@ import androidx.lifecycle.ViewModel
 import com.cesoft.cesrssreader2.R
 import com.cesoft.cesrssreader2.data.Repo
 import com.cesoft.cesrssreader2.data.entity.Channel
-import com.cesoft.cesrssreader2.data.entity.Item
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
 class FeedlistViewModel : ViewModel(), KoinComponent {
 
     companion object {
@@ -61,6 +61,7 @@ class FeedlistViewModel : ViewModel(), KoinComponent {
                 channel?.let {
                     _channel.postValue(it)
                     _rssUrlList.postValue(fetchRssUrlList())
+                    _rssUrl.postValue(url)
                 } ?: run {
                     _snackbar.postValue(R.string.alert_message)
                     _channel.postValue(Channel.EMPTY)
@@ -76,9 +77,9 @@ class FeedlistViewModel : ViewModel(), KoinComponent {
 
     private suspend fun fetchRssUrlList(): List<String> {
         val list0 = mutableListOf(
+            "https://www.androidauthority.com/feed",
             "https://www.xatakandroid.com/tag/feeds/rss2.xml",
-            "https://www.nasa.gov/rss/dyn/breaking_news.rss",
-            "https://www.androidauthority.com/feed"
+            "https://www.nasa.gov/rss/dyn/breaking_news.rss"
         )
         val list = repo.fetchRssUrls()
         return (list + list0).distinct()

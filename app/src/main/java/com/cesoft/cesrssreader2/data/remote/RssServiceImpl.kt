@@ -7,9 +7,9 @@ import com.tickaroo.tikxml.retrofit.TikXmlConverterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
-import java.net.URI
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
 class RssServiceImpl {
 
     companion object {
@@ -29,7 +29,7 @@ class RssServiceImpl {
         //Check also https://github.com/ihsanbal/LoggingInterceptor
         val interceptor = HttpLoggingInterceptor(object : HttpLoggingInterceptor.Logger {
             override fun log(message: String) {
-                Log.e(TAG, "HttpLoggingInterceptor-------------------$message")
+                Log.e(TAG, "HttpLoggingInterceptor: $message")
             }
         })
 

@@ -1,7 +1,6 @@
 package com.cesoft.cesrssreader2.ui.feedlist
 
 import android.os.Bundle
-import android.util.Log
 import android.view.*
 import android.view.KeyEvent.ACTION_DOWN
 import android.view.KeyEvent.KEYCODE_ENTER
@@ -45,8 +44,6 @@ class FeedlistFragment : Fragment(), KoinComponent, FeedlistAdapter.OnClickListe
 	override fun onActivityCreated(savedInstanceState: Bundle?) {
 		super.onActivityCreated(savedInstanceState)
 		setHasOptionsMenu(true)
-
-		Log.e(TAG, "onActivityCreated--------------------------------------------------------")
 
 		/// Recyclerview
 		feedList.layoutManager = LinearLayoutManager(requireContext())
@@ -97,9 +94,9 @@ class FeedlistFragment : Fragment(), KoinComponent, FeedlistAdapter.OnClickListe
             rssUrlAdapter.addAll(rssUrlList)
         })
         viewModel.rssUrl.observe(viewLifecycleOwner, Observer { url ->
-            feedUrl.setText(url)
+			feedUrl.setText(url)
         })
-    }
+	}
 
 	private fun update() {
 		adapter.items.clear()

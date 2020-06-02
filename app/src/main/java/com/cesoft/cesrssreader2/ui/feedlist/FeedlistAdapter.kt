@@ -14,7 +14,8 @@ import kotlinx.android.synthetic.main.item_feedlist.view.*
 import java.util.*
 import com.cesoft.cesrssreader2.ui.*//Extension functions
 
-
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//
 class FeedlistAdapter(val items: MutableList<Item>, val callback: OnClickListener)
     : RecyclerView.Adapter<FeedlistAdapter.ViewHolder>(), Filterable {
 
@@ -58,7 +59,7 @@ class FeedlistAdapter(val items: MutableList<Item>, val callback: OnClickListene
             itemView.title.text = title
             itemView.categories.text = item.categories
             itemView.description.text = item.description.toHtml()
-            item.pubDate?.let {
+            item.pubDate.let {
                 itemView.pubDate.text = item.pubDate.toDate()
             } ?: run{
                 itemView.pubDate.text =""
@@ -66,34 +67,6 @@ class FeedlistAdapter(val items: MutableList<Item>, val callback: OnClickListene
 
             itemView.setOnClickListener {
                 callback.onItemClicked(item)
-                /**
-                //show article content inside a dialog
-                val articleView = WebView(itemView.context)
-
-                articleView.settings.loadWithOverviewMode = true
-                articleView.settings.javaScriptEnabled = true
-                articleView.isHorizontalScrollBarEnabled = false
-                articleView.webChromeClient = WebChromeClient()
-                articleView.loadDataWithBaseURL(
-                    item.link,
-                    "<style>img{display: inline; height: auto; max-width: 100%;}</style>" +
-                            "<style>iframe{ height: auto; width: auto;}</style>" +
-                            item.content,
-                    null,
-                    "utf-8",
-                    null)
-
-                val alertDialog = AlertDialog.Builder(itemView.context).create()
-                alertDialog.setTitle(title)
-                alertDialog.setView(articleView)
-                alertDialog.setButton(
-                    AlertDialog.BUTTON_NEUTRAL,
-                    itemView.context.getString(R.string.close_button)
-                ) { dialog, _ -> dialog.dismiss() }
-                alertDialog.show()
-
-                (alertDialog.findViewById<View>(android.R.id.message) as TextView).movementMethod = LinkMovementMethod.getInstance()
-                */
             }
         }
     }

@@ -15,8 +15,8 @@
         android:inputType="textUri"
         android:focusedByDefault="false"
         android:layout_marginStart="8dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/default_url" />
+        android:layout_marginEnd="8dp" />
+        <!-- android:text="@string/default_url" / -->
 
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipe"
