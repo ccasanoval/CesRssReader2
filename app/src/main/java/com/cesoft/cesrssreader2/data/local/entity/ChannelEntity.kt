@@ -14,17 +14,14 @@ data class ChannelEntity(
     val title: String?,
     val link: String?,
     val description: String?,
-    val image: String?,
-    val created: Long = System.currentTimeMillis()
-    //val articles: MutableList<Feed> = mutableListOf()
+    val image: String?
 ) {
     constructor(channel: Channel): this(
         channel.id ?: UUID.randomUUID().toString(),
         channel.title ?: "?",
         channel.link,
         channel.description,
-        channel.image,
-        System.currentTimeMillis()
+        channel.image
     )
 
     fun parse(items: List<ItemEntity>): Channel {
@@ -53,12 +50,3 @@ data class ChannelEntity(
         return result
     }
 }
-/**
-package com.prof.rssparser
-data class Channel(
-    val title: String? = null,
-    val link: String? = null,
-    val description: String? = null,
-    val image: Image? = null,
-    val articles: MutableList<Article> = mutableListOf()
-)*/

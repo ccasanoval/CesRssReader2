@@ -1,33 +1,29 @@
 package com.cesoft.cesrssreader2.ui.feedlist
 
 import android.annotation.SuppressLint
-import android.app.AlertDialog
-import android.os.Build
-import android.text.Html
-import android.text.method.LinkMovementMethod
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.webkit.WebChromeClient
-import android.webkit.WebView
 import android.widget.Filter
 import android.widget.Filterable
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.cesoft.cesrssreader2.R
 import com.cesoft.cesrssreader2.data.entity.Item
 import kotlinx.android.synthetic.main.item_feedlist.view.*
-import java.text.SimpleDateFormat
 import java.util.*
+import com.cesoft.cesrssreader2.ui.*//Extension functions
 
 
-class FeedlistAdapter(val items: MutableList<Item>)
+class FeedlistAdapter(val items: MutableList<Item>, val callback: OnClickListener)
     : RecyclerView.Adapter<FeedlistAdapter.ViewHolder>(), Filterable {
 
     companion object {
         private val TAG: String = FeedlistAdapter::class.simpleName!!
+    }
+
+    interface OnClickListener {
+        fun onItemClicked(item: Item)
     }
 
     private var listFull: List<Item>? = null
@@ -43,7 +39,6 @@ class FeedlistAdapter(val items: MutableList<Item>)
 
     override fun onBindViewHolder(holder: FeedlistAdapter.ViewHolder, position: Int) = holder.bind(items[position])
 
-    ///TODO: Use a Fragment better than AlertDialog?
     inner class ViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         @SuppressLint("SetJavaScriptEnabled")
         fun bind(item: Item) {
@@ -56,19 +51,22 @@ class FeedlistAdapter(val items: MutableList<Item>)
             }
             else {
                 itemView.image.visibility = View.GONE
-                Log.e(TAG, "---------------------------NO IMAGE------------------------------------------")
             }
 
-            itemView.title.text = toHtml(item.title)
+            val title = item.title.toHtml()
+
+            itemView.title.text = title
             itemView.categories.text = item.categories
-            itemView.description.text = toHtml(item.description)
+            itemView.description.text = item.description.toHtml()
             item.pubDate?.let {
-                itemView.pubDate.text = toDate(item.pubDate)
+                itemView.pubDate.text = item.pubDate.toDate()
             } ?: run{
                 itemView.pubDate.text =""
             }
 
             itemView.setOnClickListener {
+                callback.onItemClicked(item)
+                /**
                 //show article content inside a dialog
                 val articleView = WebView(itemView.context)
 
@@ -86,7 +84,7 @@ class FeedlistAdapter(val items: MutableList<Item>)
                     null)
 
                 val alertDialog = AlertDialog.Builder(itemView.context).create()
-                alertDialog.setTitle(item.title)
+                alertDialog.setTitle(title)
                 alertDialog.setView(articleView)
                 alertDialog.setButton(
                     AlertDialog.BUTTON_NEUTRAL,
@@ -95,38 +93,9 @@ class FeedlistAdapter(val items: MutableList<Item>)
                 alertDialog.show()
 
                 (alertDialog.findViewById<View>(android.R.id.message) as TextView).movementMethod = LinkMovementMethod.getInstance()
+                */
             }
         }
-    }
-
-
-    //TODO: Move to utility class ?
-    private fun toHtml(text: String): String {
-        return if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-            Html.fromHtml(text.trim(), Html.FROM_HTML_MODE_COMPACT).toString()
-        else
-            Html.fromHtml(text.trim()).toString()
-    }
-    private fun toDate(text: String): String {
-        val formats = listOf(
-            "EEE, dd MMM yyyy HH:mm Z",
-            "EE MMM dd HH:mm:ss z yyyy",
-            "EEE, d MMM yyyy HH:mm:ss Z"
-        )
-        for(format in formats) {
-            try {
-                val sdf = SimpleDateFormat(format, Locale.ENGLISH)
-                val date = sdf.parse(text)
-                if (date != null) {
-                    Log.e(TAG, "ViewHolder:OK........."+SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(date))
-                    return SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(date)
-                }
-            }
-            catch(e: Exception) {
-                //Log.e(TAG, "ViewHolder:bind:e:", e)
-            }
-        }
-        return ""
     }
 
     /// Implemets Filterable

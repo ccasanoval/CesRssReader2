@@ -6,11 +6,12 @@ import com.cesoft.cesrssreader2.data.local.entity.ChannelEntity
 import com.cesoft.cesrssreader2.data.local.entity.RssUrlEntity
 
 //TODO: Save all feeds or just the last?
+//TODO: Save rssUrl time to get list ordered by most used
 @Dao
 interface RssDao {
 
     //SELECT
-    @Query("SELECT * FROM rss")
+    @Query("SELECT * FROM rss ORDER BY created DESC")
     suspend fun rssUrls(): List<RssUrlEntity>
 
     @Query("SELECT * FROM channels")
@@ -20,7 +21,7 @@ interface RssDao {
     suspend fun items(): List<ItemEntity>
 
     // UPDATE
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addRssUrl(rssUrl: RssUrlEntity)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

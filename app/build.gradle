@@ -23,20 +23,17 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
-
-    android {
-        compileOptions {
-            sourceCompatibility JavaVersion.VERSION_1_8
-            targetCompatibility JavaVersion.VERSION_1_8
-        }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_1_8.toString()
+        jvmTarget = '1.8'
     }
 }
 
 def koin_version = "2.1.5"
-def navigation_version = "2.2.2"
+def navigation_version = "2.2.2"//"2.1.0"
 def androidx_test_version = '1.2.0'
 def appcompat_version = '1.1.0'
 def constraint_layout_version = '1.1.3'
@@ -47,16 +44,22 @@ def junit_version = '4.13'
 def lifecycle_version = '2.2.0'
 def lifecycle_version_test = '2.1.0'
 def livedata_version = '2.3.0-alpha03'
-def material_version = '1.2.0-alpha06'
+def material_version = '1.2.0-beta01'
 def retrofit_version = '2.9.0'
 def room_version = '2.2.5'
 def truth_version = '1.0.1'
 
-
 dependencies {
-    implementation fileTree(dir: 'libs', include: ['*.jar'])
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
     implementation 'androidx.core:core-ktx:1.3.0'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+
+//    implementation 'androidx.navigation:navigation-fragment:2.1.0'
+//    implementation 'androidx.navigation:navigation-ui:2.1.0'
+//    implementation 'androidx.navigation:navigation-fragment-ktx:2.1.0'
+//    implementation 'androidx.navigation:navigation-ui-ktx:2.1.0'
+//    implementation 'androidx.lifecycle:lifecycle-extensions:2.1.0'
 
 
     // TEST -----------------------------------------------------------------------------------------
@@ -98,6 +101,7 @@ dependencies {
     implementation "androidx.navigation:navigation-ui:$navigation_version"
     implementation "androidx.navigation:navigation-fragment-ktx:$navigation_version"
     implementation "androidx.navigation:navigation-ui-ktx:$navigation_version"
+
     // Lists
     implementation "androidx.recyclerview:recyclerview:1.1.0"
     implementation "androidx.cardview:cardview:1.0.0"
@@ -112,7 +116,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$livedata_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$lifecycle_version"
-
 
     // DI : Koin
     implementation "org.koin:koin-android:$koin_version"

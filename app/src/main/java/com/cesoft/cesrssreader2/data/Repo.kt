@@ -1,5 +1,6 @@
 package com.cesoft.cesrssreader2.data
 
+import android.util.Log
 import com.cesoft.cesrssreader2.data.entity.Channel
 import com.cesoft.cesrssreader2.data.local.dao.RssDao
 import com.cesoft.cesrssreader2.data.local.entity.ChannelEntity
@@ -19,7 +20,7 @@ class Repo(private val dao: RssDao,
 
     companion object {
         private val TAG: String = Repo::class.simpleName!!
-        private const val MAX_TIME = 5*60*1000//TODO: User settings...
+        private const val MAX_TIME = 15*60*1000//TODO: User settings...
     }
 
     val util: Util by inject()
@@ -43,16 +44,25 @@ class Repo(private val dao: RssDao,
 
     //TODO: use channel.lastBuildDate in the algorithm ?
     private enum class DataSource { NONE, LOCAL, REMOTE }
-    private suspend fun localOrRemote(): DataSource {
+    private suspend fun localOrRemote(url: String): DataSource {
+        val rssUrlList = dao.rssUrls()
+        if(rssUrlList.isEmpty() || rssUrlList[0].url != url) {
+            return if(util.isOnline())
+                DataSource.REMOTE
+            else
+                DataSource.NONE
+        }
+
+        val lastUpdate = rssUrlList[0].created
         val channel = dao.channel()
         val db = channel != null && dao.items().isNotEmpty()
 
         return if(util.isOnline()) {
             if(db) {
-                if(MAX_TIME > System.currentTimeMillis() - channel!!.created)
-                    DataSource.LOCAL
-                else
+                if(System.currentTimeMillis() - lastUpdate > MAX_TIME)
                     DataSource.REMOTE
+                else
+                    DataSource.LOCAL
             } else
                 DataSource.REMOTE
         } else if(db) {
@@ -62,7 +72,7 @@ class Repo(private val dao: RssDao,
     }
 
     suspend fun fetchChannel(url: String): Channel? {
-        return when(localOrRemote()) {
+        return when(localOrRemote(url)) {
             DataSource.LOCAL -> {
                 fetchLocalFeeds()
             }

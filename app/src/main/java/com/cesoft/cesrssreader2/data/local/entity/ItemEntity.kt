@@ -40,10 +40,10 @@ data class ItemEntity(
         title ?: "",
         author ?: "",
         link ?: "",
-        pubDate,
+        pubDate ?: "",
         description ?: "",
         content ?: "",
         image ?: "",
-        categories
+        categories ?: ""
     )
 }

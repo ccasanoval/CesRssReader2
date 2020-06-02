@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import com.cesoft.cesrssreader2.data.local.RssDb
 import com.cesoft.cesrssreader2.data.local.dao.RssDao
 import com.cesoft.cesrssreader2.data.local.entity.RssUrlEntity
+import com.cesoft.cesrssreader2.data.remote.RssServiceImpl
 import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
@@ -24,6 +25,8 @@ class RepoTest {
 
     @Mock
     private lateinit var dao: RssDao
+    //@Mock
+    private lateinit var repo: Repo
 //    @Mock
 //    private lateinit var service: FeedService
 //    private lateinit var repository: Repo
@@ -39,7 +42,16 @@ class RepoTest {
         `when`(db.runInTransaction(any())).thenCallRealMethod()
         dao = db.feedDao
 
-        //repository = Repo(db, dao, service, TestContextProvider())
+        val service = mock(RssServiceImpl::class.java)
+//        `when`(service.rss(Any)).thenReturn()
+//
+//
+//        repo = Repo(dao, service, TestContextProvider())
+    }
+
+    @Test
+    fun localOrRemoteTest() {
+
     }
 
     @Test

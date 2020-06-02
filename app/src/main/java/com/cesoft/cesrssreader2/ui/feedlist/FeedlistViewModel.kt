@@ -7,8 +7,10 @@ import androidx.lifecycle.ViewModel
 import com.cesoft.cesrssreader2.R
 import com.cesoft.cesrssreader2.data.Repo
 import com.cesoft.cesrssreader2.data.entity.Channel
+import com.cesoft.cesrssreader2.data.entity.Item
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import org.koin.core.KoinComponent
 import org.koin.core.inject
@@ -25,17 +27,27 @@ class FeedlistViewModel : ViewModel(), KoinComponent {
     val snackbar: LiveData<Any?>
         get() = _snackbar
 
-    private val _feedlist = MutableLiveData<Channel>()
-    val feedlist: LiveData<Channel>
-        get() = _feedlist
+    private val _channel = MutableLiveData<Channel>()
+    val channel: LiveData<Channel>
+        get() = _channel
 
     private val _rssUrlList = MutableLiveData<List<String>>()
     val rssUrlList: LiveData<List<String>>
         get() = _rssUrlList
 
+    private val _rssUrl = MutableLiveData<String>()
+    val rssUrl: LiveData<String>
+        get() = _rssUrl
+
     init {
         GlobalScope.launch(Dispatchers.Main) {
-            _rssUrlList.postValue(fetchRssUrlList())
+            //delay(15000)
+            val rssList = fetchRssUrlList()
+            if(rssList.isNotEmpty()) {
+                _rssUrl.postValue(rssList[0])
+                fetchFeed(rssList[0])
+            }
+            _rssUrlList.postValue(rssList)
         }
     }
 
@@ -43,20 +55,21 @@ class FeedlistViewModel : ViewModel(), KoinComponent {
 
     fun fetchFeed(url: String) {
         GlobalScope.launch(Dispatchers.Main) {
+            //delay(15000)
             try {
                 val channel = repo.fetchChannel(url)
                 channel?.let {
-                    _feedlist.postValue(it)
+                    _channel.postValue(it)
                     _rssUrlList.postValue(fetchRssUrlList())
                 } ?: run {
                     _snackbar.postValue(R.string.alert_message)
-                    _feedlist.postValue(Channel.EMPTY)
+                    _channel.postValue(Channel.EMPTY)
                 }
             }
             catch(e: Exception) {
                 Log.e(TAG, "fetchFeed:e:",e)
                 _snackbar.postValue(e.localizedMessage)
-                _feedlist.postValue(Channel.EMPTY)
+                _channel.postValue(Channel.EMPTY)
             }
         }
     }
@@ -68,9 +81,7 @@ class FeedlistViewModel : ViewModel(), KoinComponent {
             "https://www.androidauthority.com/feed"
         )
         val list = repo.fetchRssUrls()
-        for(x in list) {
-            if (!list0.contains(x)) list0.add(x)
-        }
-        return list0
+        return (list + list0).distinct()
     }
+
 }

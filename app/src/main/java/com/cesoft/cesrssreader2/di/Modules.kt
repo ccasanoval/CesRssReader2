@@ -22,10 +22,7 @@ val remoteModule = module {
 
 val localModule = module {
 	fun provideDatabase(application: Application): RssDb {
-		return Room.databaseBuilder(application, RssDb::class.java, RssDb.NAME)
-			.fallbackToDestructiveMigration()
-			//.allowMainThreadQueries()
-			.build()
+		return RssDb.buildDefault(application)
 	}
 	fun provideFeedDao(db: RssDb): RssDao {
 		return db.feedDao

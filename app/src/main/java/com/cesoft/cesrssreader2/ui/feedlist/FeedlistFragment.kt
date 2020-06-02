@@ -1,84 +1,59 @@
 package com.cesoft.cesrssreader2.ui.feedlist
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.view.KeyEvent.ACTION_DOWN
 import android.view.KeyEvent.KEYCODE_ENTER
 import android.widget.ArrayAdapter
 import androidx.appcompat.widget.SearchView
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.feedlist_fragment.*
+import kotlinx.android.synthetic.main.fragment_feedlist.*
 import org.koin.core.KoinComponent
 import com.cesoft.cesrssreader2.R
+import com.cesoft.cesrssreader2.data.entity.Channel
+import com.cesoft.cesrssreader2.data.entity.Item
 import com.cesoft.cesrssreader2.ui.hideKeyboard//Extension functions
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-class FeedlistFragment : Fragment(), KoinComponent {
+class FeedlistFragment : Fragment(), KoinComponent, FeedlistAdapter.OnClickListener {
 
 	companion object {
-		fun newInstance() = FeedlistFragment()
-		private val TAG: String = FeedlistFragment::class.simpleName!!
+		val TAG: String = FeedlistFragment::class.simpleName!!
 	}
 
 	private val viewModel: FeedlistViewModel by viewModels()
 	private lateinit var adapter: FeedlistAdapter
 
-	override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-							  savedInstanceState: Bundle?): View {
-		return inflater.inflate(R.layout.feedlist_fragment, container, false)
+	override fun onCreateView(
+			inflater: LayoutInflater,
+			container: ViewGroup?,
+			savedInstanceState: Bundle?): View {
+		return inflater.inflate(R.layout.fragment_feedlist, container, false)
 	}
 
 	override fun onActivityCreated(savedInstanceState: Bundle?) {
 		super.onActivityCreated(savedInstanceState)
-
 		setHasOptionsMenu(true)
 
-//		searchItems.addTextChangedListener(object : TextWatcher {
-//			override fun afterTextChanged(s: Editable?) {
-//			}
-//
-//			override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-//			}
-//
-//			override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-//				nameFromDb(s.toString())
-//			}
-//		})
+		Log.e(TAG, "onActivityCreated--------------------------------------------------------")
 
-		val feedUrlAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
-			requireContext(),
-			android.R.layout.simple_dropdown_item_1line)
-		feedUrl.setAdapter(feedUrlAdapter)
-		viewModel.rssUrlList.observe(viewLifecycleOwner, Observer { rssUrlList ->
-			feedUrlAdapter.clear()
-			feedUrlAdapter.addAll(rssUrlList)
-		})
-
-		viewModel.feedlist.observe(viewLifecycleOwner, Observer { channel ->
-			if(channel != null) {
-				if(channel.title != null) {
-					activity?.title = channel.title
-				}
-				adapter = FeedlistAdapter(channel.items)
-				feedList.adapter = adapter
-				adapter.notifyDataSetChanged()
-				progressBar.visibility = View.GONE
-				swipe.isRefreshing = false
-				hideKb()
-			}
-		})
-
+		/// Recyclerview
 		feedList.layoutManager = LinearLayoutManager(requireContext())
 		feedList.itemAnimator = DefaultItemAnimator()
 		feedList.setHasFixedSize(true)
 
+		/// On Messages
 		viewModel.snackbar.observe(viewLifecycleOwner, Observer { value ->
 			value?.let {
 				if(value is Int )
@@ -89,33 +64,69 @@ class FeedlistFragment : Fragment(), KoinComponent {
 			}
 		})
 
+		/// Update
 		swipe.setColorSchemeResources(R.color.colorPrimary, R.color.colorPrimaryDark)
 		swipe.canChildScrollUp()
 		swipe.setOnRefreshListener {
-			adapter.items.clear()
-			adapter.notifyDataSetChanged()
-			swipe.isRefreshing = true
-			viewModel.fetchFeed(feedUrl.text.toString())
-			hideKb()
+			update()
 		}
-
-        viewModel.fetchFeed(feedUrl.text.toString())
-
 		feedUrl.setOnItemClickListener() { adapter, view, i, j ->
-			viewModel.fetchFeed(feedUrl.text.toString())
+			update()
 		}
 		feedUrl.setOnKeyListener { view, code, keyEvent ->
 			if(code == KEYCODE_ENTER && keyEvent.action == ACTION_DOWN) {
-				viewModel.fetchFeed(feedUrl.text.toString())
+				update()
 				true
 			}
 			else
 				false
 		}
+
+        /// On Updated
+        viewModel.channel.observe(viewLifecycleOwner, Observer { channel ->
+            onUpdated(channel)
+        })
+
+        /// Rss Url
+        val rssUrlAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
+            requireContext(),
+            android.R.layout.simple_dropdown_item_1line)
+        feedUrl.setAdapter(rssUrlAdapter)
+        viewModel.rssUrlList.observe(viewLifecycleOwner, Observer { rssUrlList ->
+            rssUrlAdapter.clear()
+            rssUrlAdapter.addAll(rssUrlList)
+        })
+        viewModel.rssUrl.observe(viewLifecycleOwner, Observer { url ->
+            feedUrl.setText(url)
+        })
+    }
+
+	private fun update() {
+		adapter.items.clear()
+		adapter.notifyDataSetChanged()
+		swipe.isRefreshing = true
+		viewModel.fetchFeed(feedUrl.text.toString())
+		hideKb()
 	}
+
+    private fun onUpdated(channel: Channel?) {
+        if(channel != null) {
+            if(channel.title != null) {
+                activity?.title = channel.title
+            }
+            adapter = FeedlistAdapter(channel.items, this)
+            feedList.adapter = adapter
+            adapter.notifyDataSetChanged()
+            progressBar.visibility = View.GONE
+            swipe.isRefreshing = false
+            hideKb()
+        }
+    }
 
 	override fun onResume() {
 		super.onResume()
+		//DEL requireActivity().actionBar?.setDisplayHomeAsUpEnabled(false)
+		(requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
 		hideKb()
 	}
 
@@ -126,18 +137,13 @@ class FeedlistFragment : Fragment(), KoinComponent {
 
 	override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
 		super.onCreateOptionsMenu(menu, inflater)
-		inflater.inflate(R.menu.main_menu, menu)
-		//val searchManager = context?.getSystemService(Context.SEARCH_SERVICE) as SearchManager
+		inflater.inflate(R.menu.feedlist, menu)
 		(menu.findItem(R.id.menu_search)?.actionView as SearchView).apply {
-			//Log.e(TAG, "onCreateOptionsMenu---------------------------------------------------------------------")
-			//setSearchableInfo(searchManager.getSearchableInfo(ComponentName(context, FeedlistFragment::class.java)))
 			setOnQueryTextListener(object : SearchView.OnQueryTextListener {
 				override fun onQueryTextSubmit(query: String?): Boolean {
-					//Log.e(TAG, "onCreateOptionsMenu-onQueryTextSubmit--------------------------------------------------------------------")
 					return false
 				}
 				override fun onQueryTextChange(newText: String?): Boolean {
-					//Log.e(TAG, "onCreateOptionsMenu-onQueryTextChange--------------------------------------------------------------------")
 					adapter.filter.filter(newText)
 					return true
 				}
@@ -145,4 +151,15 @@ class FeedlistFragment : Fragment(), KoinComponent {
 		}
 	}
 
+	/// Implements FeedlistAdapter.OnClickListener
+	override fun onItemClicked(item: Item) {
+		//Log.e(TAG, "onItemClicked-------------------------------------------------------------"+item.title)
+		//val bundle = bundleOf("id" to item)
+		//findNavController().navigate(R.id.nav_feeditem, bundle)
+		//(activity as MainActivity?)?.navigateToFeedItem(item)
+
+		val bundle = bundleOf(Item.TAG to item)
+		//val bundle = Bundle().apply { putParcelable(Item.TAG, item) }
+		findNavController().navigate(R.id.nav_feeditem, bundle)
+	}
 }

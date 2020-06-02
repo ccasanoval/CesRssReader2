@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_feedlist">
+
+    <fragment
+        android:id="@+id/nav_feedlist"
+        android:name="com.cesoft.cesrssreader2.ui.feedlist.FeedlistFragment"
+        android:label="@string/menu_feedlist"
+        tools:layout="@layout/fragment_feedlist">
+        <action
+            android:id="@+id/action_CropsFragment_to_EditCropFragment"
+            app:destination="@id/nav_feeditem">
+            <argument android:name="item" app:argType="string" />
+        </action>
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_feeditem"
+        android:name="com.cesoft.cesrssreader2.ui.feeditem.FeeditemFragment"
+        android:label="@string/menu_feeditemy"
+        tools:layout="@layout/fragment_feeditem" />
+
+    <!--fragment
+        android:id="@+id/nav_slideshow"
+        android:name="com.cesoft.cesrssreader2.ui.slideshow.SlideshowFragment"
+        android:label="@string/menu_slideshow"
+        tools:layout="@layout/fragment_slideshow" / -->
+</navigation>

@@ -60,11 +60,12 @@
 
         <TextView
             android:id="@+id/categories"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textColor="@android:color/darker_gray"
             android:layout_marginStart="16dp"
             android:layout_marginTop="5dp"
+            android:maxLines="2"
             app:layout_constraintEnd_toStartOf="@+id/image"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/description" />
