@@ -84,5 +84,10 @@ class LocalInstrumentedTest {
 
         Assert.assertEquals(channelEntity, channelEntity2)
         Assert.assertEquals(feedsEntiy, feedEntity2)
+
+        //java.lang.AssertionError: expected:
+        //"com.cesoft.cesrssreader2.data.local.entity.ChannelEntity<ChannelEntity(id=9875cf1e-7666-49ab-8e51-fa673b3ce553, title=Channel Title, link=Channel Link, description=Channel Description, image=Channel Image)>"
+        //"com.cesoft.cesrssreader2.data.local.entity.ChannelEntity<ChannelEntity(id=9875cf1e-7666-49ab-8e51-fa673b3ce553, title=Channel Title, link=Channel Link, description=Channel Description, image=Channel Image)>"
+
     }
 }

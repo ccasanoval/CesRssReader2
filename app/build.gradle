@@ -67,8 +67,8 @@ dependencies {
     // Coroutines
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutines_android_version"
     // mocks
-    //testImplementation "org.mockito:mockito-core:2.25.0"
-    //testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
+    testImplementation "org.mockito:mockito-core:3.3.3"
+    testImplementation 'com.nhaarman.mockitokotlin2:mockito-kotlin:2.2.0'
     // Architecture Components testing libraries
     testImplementation "androidx.arch.core:core-testing:$lifecycle_version_test"
     testImplementation "com.google.truth:truth:$truth_version"

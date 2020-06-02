@@ -26,7 +26,7 @@ class RepoTest {
     @Mock
     private lateinit var dao: RssDao
     //@Mock
-    private lateinit var repo: Repo
+//    private lateinit var repo: Repo
 //    @Mock
 //    private lateinit var service: FeedService
 //    private lateinit var repository: Repo
@@ -42,7 +42,7 @@ class RepoTest {
         `when`(db.runInTransaction(any())).thenCallRealMethod()
         dao = db.feedDao
 
-        val service = mock(RssServiceImpl::class.java)
+//        val service = mock(RssServiceImpl::class.java)
 //        `when`(service.rss(Any)).thenReturn()
 //
 //
