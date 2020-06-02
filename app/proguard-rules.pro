@@ -29,11 +29,10 @@
   public *;
 }
 
-# for DexGuard only
--keepresourcexmlelements manifest/application/meta-data@value=GlideModule
+### JSOUP ##########################################################################################
+-keeppackagenames org.jsoup.nodes
 
-
-### RETROFIT #######################################################################################
+### TIK XML ########################################################################################
 -keep class com.tickaroo.tikxml.** { *; }
 -keep @com.tickaroo.tikxml.annotation.Xml public class *
 -keep class **$$TypeAdapter { *; }

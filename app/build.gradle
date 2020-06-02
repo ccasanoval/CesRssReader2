@@ -17,10 +17,24 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        config {
+            def credentialFile = rootProject.file("credential.properties")
+            def credentialProperty = new Properties()
+            credentialProperty.load(new FileInputStream(credentialFile))
+            //
+            keyAlias credentialProperty['keyAlias']
+            storeFile file(credentialProperty['storeFile'])
+            keyPassword credentialProperty['keyPassword']
+            storePassword credentialProperty['storePassword']
+        }
+    }
     buildTypes {
         release {
-            minifyEnabled false
+            minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
+            debuggable true
         }
     }
     compileOptions {

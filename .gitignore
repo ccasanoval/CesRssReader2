@@ -13,3 +13,4 @@
 .externalNativeBuild
 .cxx
 /.idea/jarRepositories.xml
+/credential.properties

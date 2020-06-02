@@ -32,14 +32,21 @@ class Util(private val context: Context) {
 
     companion object {
         fun getImgSrcFromHtml(htmlString: String): String {
+            android.util.Log.e("Util", "--------------------0-------------------------$htmlString")
             val doc: Document = Jsoup.parse(htmlString)
+            android.util.Log.e("Util", "--------------------1-------------------------$htmlString")
+
             val images: Elements = doc.select("img")
+            android.util.Log.e("Util", "-------------------2--------------------------$images")
+
             for (el in images) {
+                android.util.Log.e("Util", "---------------3------------------------------$el")
                 var img = el.attr("src")
                 if(img.startsWith("//"))
                     img = "http:$img"
                 return img
             }
+            android.util.Log.e("Util", "---------------9------------------------------")
             return ""
         }
     }

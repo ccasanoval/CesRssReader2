@@ -44,6 +44,7 @@ data class ItemEntity(
             body = description
         }
         if(image.isNullOrEmpty()) {
+            android.util.Log.e("ItemEnt", "---------------------------------------------")
             body?.let { image = Util.getImgSrcFromHtml(it) }
         }
         return Item(
