@@ -7,9 +7,7 @@ import androidx.lifecycle.ViewModel
 import com.cesoft.cesrssreader2.R
 import com.cesoft.cesrssreader2.data.Repo
 import com.cesoft.cesrssreader2.data.entity.Channel
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.koin.core.KoinComponent
 import org.koin.core.inject
 
@@ -21,7 +19,7 @@ class FeedlistViewModel : ViewModel(), KoinComponent {
         private val TAG: String = FeedlistViewModel::class.simpleName!!
     }
 
-    private val repo: Repo by inject()
+    private val _repo: Repo by inject()
 
     private val _snackbar = MutableLiveData<Any?>()
     val snackbar: LiveData<Any?>
@@ -39,40 +37,68 @@ class FeedlistViewModel : ViewModel(), KoinComponent {
     val rssUrl: LiveData<String>
         get() = _rssUrl
 
+    private var _job: Job? = null
+    private var _isWorking = MutableLiveData<Boolean>()
+    val isWorking: LiveData<Boolean>
+        get() = _isWorking
+
     init {
-        GlobalScope.launch(Dispatchers.Main) {
-            //delay(15000)
-            val rssList = fetchRssUrlList()
-            if(rssList.isNotEmpty()) {
-                _rssUrl.postValue(rssList[0])
-                fetchFeed(rssList[0])
+        _job = GlobalScope.launch {
+            try {
+                val rssList = fetchRssUrlList()
+                _rssUrlList.postValue(rssList)
+                if (rssList.isNotEmpty()) {
+                    _rssUrl.postValue(rssList[0])
+                    fetchFeed(rssList[0])
+                }
             }
-            _rssUrlList.postValue(rssList)
+            catch(e: CancellationException) {
+                _snackbar.postValue(R.string.alert_cancelled)
+                _channel.postValue(Channel.EMPTY)
+            }
+            finally {
+                //withContext(NonCancellable) {
+                _isWorking.postValue(false)
+            }
         }
+        _isWorking.postValue(_job?.isActive)
     }
 
     fun onSnackbarShowed() { _snackbar.value = null }
 
+    fun cancel() {
+        _job?.cancel()
+        _isWorking.postValue(false)
+    }
     fun fetchFeed(url: String) {
-        GlobalScope.launch(Dispatchers.Main) {
-            //delay(15000)
+        _job = GlobalScope.launch {
+
             try {
-                val channel = repo.fetchChannel(url)
+                if(!isActive)throw CancellationException()
+                val channel = _repo.fetchChannel(url)
                 channel?.let {
                     _channel.postValue(it)
                     _rssUrlList.postValue(fetchRssUrlList())
                     _rssUrl.postValue(url)
                 } ?: run {
-                    _snackbar.postValue(R.string.alert_message)
+                    _snackbar.postValue(R.string.alert_no_inet)
                     _channel.postValue(Channel.EMPTY)
                 }
             }
-            catch(e: Exception) {
-                Log.e(TAG, "fetchFeed:e:",e)
-                _snackbar.postValue(e.localizedMessage)
+            catch(e: CancellationException) {
+                _snackbar.postValue(R.string.alert_cancelled)
                 _channel.postValue(Channel.EMPTY)
             }
+            catch(e: Exception) {
+                Log.e(TAG, "fetchFeed:e:", e)
+                _snackbar.postValue("Error: ${e.localizedMessage}")
+                _channel.postValue(Channel.EMPTY)
+            }
+            finally {
+                _isWorking.postValue(false)
+            }
         }
+        _isWorking.postValue(_job?.isActive)
     }
 
     private suspend fun fetchRssUrlList(): List<String> {
@@ -81,7 +107,7 @@ class FeedlistViewModel : ViewModel(), KoinComponent {
             "https://www.xatakandroid.com/tag/feeds/rss2.xml",
             "https://www.nasa.gov/rss/dyn/breaking_news.rss"
         )
-        val list = repo.fetchRssUrls()
+        val list = _repo.fetchRssUrls()
         return (list + list0).distinct()
     }
 

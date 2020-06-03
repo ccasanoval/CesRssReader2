@@ -1,6 +1,7 @@
 package com.cesoft.cesrssreader2.ui.feedlist
 
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import android.view.KeyEvent.ACTION_DOWN
 import android.view.KeyEvent.KEYCODE_ENTER
@@ -32,7 +33,7 @@ class FeedlistFragment : Fragment(), KoinComponent, FeedlistAdapter.OnClickListe
 	}
 
 	private val viewModel: FeedlistViewModel by viewModels()
-	private lateinit var adapter: FeedlistAdapter
+	private var adapter: FeedlistAdapter? = FeedlistAdapter(mutableListOf(), this)
 
 	override fun onCreateView(
 			inflater: LayoutInflater,
@@ -48,6 +49,7 @@ class FeedlistFragment : Fragment(), KoinComponent, FeedlistAdapter.OnClickListe
 		/// Recyclerview
 		feedList.layoutManager = LinearLayoutManager(requireContext())
 		feedList.itemAnimator = DefaultItemAnimator()
+		feedList.adapter = adapter
 		feedList.setHasFixedSize(true)
 
 		/// On Messages
@@ -83,6 +85,9 @@ class FeedlistFragment : Fragment(), KoinComponent, FeedlistAdapter.OnClickListe
         viewModel.channel.observe(viewLifecycleOwner, Observer { channel ->
             onUpdated(channel)
         })
+		viewModel.isWorking.observe(viewLifecycleOwner, Observer { isWorking ->
+			swipe.isRefreshing = isWorking
+		})
 
         /// Rss Url
         val rssUrlAdapter: ArrayAdapter<String> = ArrayAdapter<String>(
@@ -99,30 +104,24 @@ class FeedlistFragment : Fragment(), KoinComponent, FeedlistAdapter.OnClickListe
 	}
 
 	private fun update() {
-		adapter.items.clear()
-		adapter.notifyDataSetChanged()
-		swipe.isRefreshing = true
+		adapter?.items?.clear()
+		adapter?.notifyDataSetChanged()
 		viewModel.fetchFeed(feedUrl.text.toString())
 		hideKb()
 	}
 
-    private fun onUpdated(channel: Channel?) {
-        if(channel != null) {
-            if(channel.title != null) {
-                activity?.title = channel.title
-            }
-            adapter = FeedlistAdapter(channel.items, this)
-            feedList.adapter = adapter
-            adapter.notifyDataSetChanged()
-            progressBar.visibility = View.GONE
-            swipe.isRefreshing = false
-            hideKb()
-        }
+    private fun onUpdated(channel: Channel) {
+		if(channel.title != null) {
+			activity?.title = channel.title
+		}
+		adapter = FeedlistAdapter(channel.items, this)
+		feedList.adapter = adapter
+		adapter?.notifyDataSetChanged()
+		hideKb()
     }
 
 	override fun onResume() {
 		super.onResume()
-		//DEL requireActivity().actionBar?.setDisplayHomeAsUpEnabled(false)
 		(requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
 		hideKb()
 	}
@@ -141,22 +140,26 @@ class FeedlistFragment : Fragment(), KoinComponent, FeedlistAdapter.OnClickListe
 					return false
 				}
 				override fun onQueryTextChange(newText: String?): Boolean {
-					adapter.filter.filter(newText)
+					adapter?.filter?.filter(newText)
 					return true
 				}
 			})
 		}
 	}
 
+	override fun onOptionsItemSelected(item: MenuItem): Boolean {
+		when(item.itemId) {
+			R.id.menu_cancel -> {
+				viewModel.cancel()
+				return true
+			}
+		}
+		return super.onOptionsItemSelected(item)
+	}
+
 	/// Implements FeedlistAdapter.OnClickListener
 	override fun onItemClicked(item: Item) {
-		//Log.e(TAG, "onItemClicked-------------------------------------------------------------"+item.title)
-		//val bundle = bundleOf("id" to item)
-		//findNavController().navigate(R.id.nav_feeditem, bundle)
-		//(activity as MainActivity?)?.navigateToFeedItem(item)
-
 		val bundle = bundleOf(Item.TAG to item)
-		//val bundle = Bundle().apply { putParcelable(Item.TAG, item) }
 		findNavController().navigate(R.id.nav_feeditem, bundle)
 	}
 }

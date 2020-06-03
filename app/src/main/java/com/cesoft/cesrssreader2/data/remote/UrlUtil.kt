@@ -13,7 +13,7 @@ data class UrlUtil(
             val uri = URI(url)
 
             val domain = "${uri.scheme}://${uri.host}/"
-            val path = if(uri.path[0]!='/') uri.path else uri.path.substring(1)
+            val path = if(uri.path.isEmpty() || uri.path[0]!='/') uri.path else uri.path.substring(1)
             val query = uri.query
 
             val queries = mutableMapOf<String, String>()
