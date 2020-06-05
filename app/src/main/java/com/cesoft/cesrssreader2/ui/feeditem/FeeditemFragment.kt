@@ -1,7 +1,8 @@
 package com.cesoft.cesrssreader2.ui.feeditem
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -34,6 +35,11 @@ class FeeditemFragment : Fragment(), KoinComponent {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
         item = arguments?.get(Item.TAG) as Item
+
+        fabViewInWeb.setOnClickListener {
+            val browserIntent = Intent(Intent.ACTION_VIEW, Uri.parse(item?.link))
+            startActivity(browserIntent)
+        }
     }
 
     override fun onResume() {
