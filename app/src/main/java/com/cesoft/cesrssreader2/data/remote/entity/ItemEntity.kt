@@ -53,6 +53,7 @@ data class ItemEntity(
             author ?:"",
             link ?:"",
             pubDate ?:"",
+            Util.toTimeMillis(pubDate),
             description ?:"",
             body ?:"",
             image ?:"",

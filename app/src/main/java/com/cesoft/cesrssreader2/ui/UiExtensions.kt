@@ -2,10 +2,9 @@ package com.cesoft.cesrssreader2.ui
 
 import android.app.Activity
 import android.content.Context
-import android.os.Build
-import android.text.Html
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import androidx.core.text.parseAsHtml
 import androidx.fragment.app.Fragment
 import java.text.SimpleDateFormat
 import java.util.*
@@ -24,21 +23,28 @@ fun Context.hideKeyboard(view: View) {
 
 /// Parsing utilities
 fun String.toHtml(): String {
-    val parsed = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
-        Html.fromHtml(this.trim(), Html.FROM_HTML_MODE_COMPACT).toString()
-    else
-        Html.fromHtml(this.trim()).toString()
-    if(parsed.isEmpty()) return ""
-    return if(parsed[0].isLetterOrDigit())
-        parsed.trim()
-    else
-        parsed.substring(1).trim()
+   return parseAsHtml().toString().replace(0xFFFC.toChar(), ' ').trim()
+}
+fun Long.toDate(alternativeDate: String=""): String {
+    return try {
+        SimpleDateFormat("dd MMMM yyyy", Locale.getDefault()).format(this)
+    }
+    catch(e: Exception) {
+        alternativeDate
+    }
 }
 fun String.toDate(): String {
     val formats = listOf(
+        "EEE, dd MMM yyyy HH:mm:ss Z",
         "EEE, dd MMM yyyy HH:mm Z",
-        "EE MMM dd HH:mm:ss z yyyy",
-        "EEE, d MMM yyyy HH:mm:ss Z"
+        "EEE, d MMM yyyy HH:mm:ss Z",
+        "EEE, d MMM yyyy HH:mm Z",
+        "EEE dd MMM yyyy HH:mm:ss Z",
+        "EEE dd MMM yyyy HH:mm Z",
+        "EEE d MMM yyyy HH:mm:ss Z",
+        "EEE d MMM yyyy HH:mm Z",
+        "EE, MMM dd HH:mm:ss z yyyy",
+        "EE MMM dd HH:mm:ss z yyyy"
     )
     for(format in formats) {
         try {

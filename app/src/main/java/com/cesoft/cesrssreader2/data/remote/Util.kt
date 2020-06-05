@@ -8,6 +8,8 @@ import android.os.Build
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
+import java.text.SimpleDateFormat
+import java.util.*
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //
@@ -41,6 +43,34 @@ class Util(private val context: Context) {
                 return img
             }
             return ""
+        }
+        fun toTimeMillis(date: String?): Long {
+            if(date == null) {
+                return System.currentTimeMillis()
+            }
+            val formats = listOf(
+                "EEE, dd MMM yyyy HH:mm:ss Z",
+                "EEE, dd MMM yyyy HH:mm Z",
+                "EEE, d MMM yyyy HH:mm:ss Z",
+                "EEE, d MMM yyyy HH:mm Z",
+                "EEE dd MMM yyyy HH:mm:ss Z",
+                "EEE dd MMM yyyy HH:mm Z",
+                "EEE d MMM yyyy HH:mm:ss Z",
+                "EEE d MMM yyyy HH:mm Z",
+                "EE, MMM dd HH:mm:ss z yyyy",
+                "EE MMM dd HH:mm:ss z yyyy"
+            )
+            for(format in formats) {
+                try {
+                    val sdf = SimpleDateFormat(format, Locale.ENGLISH)
+                    val dateParsed = sdf.parse(date)
+                    if(dateParsed != null) {
+                        return dateParsed.time
+                    }
+                }
+                catch(ignore: Exception) { }
+            }
+            return System.currentTimeMillis()
         }
     }
 }

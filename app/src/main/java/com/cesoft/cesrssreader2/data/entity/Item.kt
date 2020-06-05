@@ -10,6 +10,7 @@ data class Item(
     val author: String,
     val link: String,
     val pubDate: String,
+    val created: Long,
     val description: String,
     var content: String,//TODO: check again the relationship btw description and content!!
     var image: String,
@@ -24,6 +25,7 @@ data class Item(
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: "",
+        parcel.readLong(),
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: "",
@@ -39,6 +41,7 @@ data class Item(
             writeString(author)
             writeString(link)
             writeString(pubDate)
+            writeLong(created)
             writeString(description)
             writeString(content)
             writeString(image)

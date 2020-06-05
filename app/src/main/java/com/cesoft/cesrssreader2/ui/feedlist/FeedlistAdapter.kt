@@ -44,7 +44,7 @@ class FeedlistAdapter(val items: MutableList<Item>, val callback: OnClickListene
         @SuppressLint("SetJavaScriptEnabled")
         fun bind(item: Item) {
 
-            val img = item.image ?:""
+            val img = item.image
             if(img.isNotEmpty()) {
                 itemView.image.visibility = View.VISIBLE
                 Glide.with(itemView).load(img).into(itemView.image)
@@ -60,7 +60,7 @@ class FeedlistAdapter(val items: MutableList<Item>, val callback: OnClickListene
             itemView.categories.text = item.categories
             itemView.description.text = item.description.toHtml()
             item.pubDate.let {
-                itemView.pubDate.text = item.pubDate.toDate()
+                itemView.pubDate.text = item.created.toDate(item.pubDate)//item.pubDate.toDate()
             } ?: run{
                 itemView.pubDate.text =""
             }

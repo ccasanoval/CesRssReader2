@@ -72,7 +72,6 @@ class FeedlistViewModel : ViewModel(), KoinComponent {
     }
     fun fetchFeed(url: String) {
         _job = GlobalScope.launch {
-
             try {
                 if(!isActive)throw CancellationException()
                 val channel = _repo.fetchChannel(url)
@@ -93,6 +92,8 @@ class FeedlistViewModel : ViewModel(), KoinComponent {
                 Log.e(TAG, "fetchFeed:e:", e)
                 _snackbar.postValue("Error: ${e.localizedMessage}")
                 _channel.postValue(Channel.EMPTY)
+                delay(5000L)
+                fetchFeed(url)
             }
             finally {
                 _isWorking.postValue(false)
