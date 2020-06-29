@@ -10,11 +10,11 @@
         android:name="com.cesoft.cesrssreader2.ui.feedlist.FeedlistFragment"
         android:label="@string/menu_feedlist"
         tools:layout="@layout/fragment_feedlist">
-        <action
+        <!-- action
             android:id="@+id/action_CropsFragment_to_EditCropFragment"
             app:destination="@id/nav_feeditem">
             <argument android:name="item" app:argType="string" />
-        </action>
+        </action -->
     </fragment>
 
     <fragment

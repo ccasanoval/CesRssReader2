@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.cesoft.cesrssreader2.R
 import com.cesoft.cesrssreader2.data.Repo
 import com.cesoft.cesrssreader2.data.entity.Channel
@@ -43,7 +44,7 @@ class FeedlistViewModel : ViewModel(), KoinComponent {
         get() = _isWorking
 
     init {
-        _job = GlobalScope.launch {
+        _job = viewModelScope.launch {
             try {
                 val rssList = fetchRssUrlList()
                 _rssUrlList.postValue(rssList)
@@ -71,7 +72,7 @@ class FeedlistViewModel : ViewModel(), KoinComponent {
         _isWorking.postValue(false)
     }
     fun fetchFeed(url: String) {
-        _job = GlobalScope.launch {
+        _job = viewModelScope.launch {
             try {
                 if(!isActive)throw CancellationException()
                 val channel = _repo.fetchChannel(url)
